@@ -1,2 +1,0 @@
-# BEETECH
-Beetech exercise
