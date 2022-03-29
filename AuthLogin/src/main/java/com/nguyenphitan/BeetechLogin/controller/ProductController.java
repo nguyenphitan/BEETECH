@@ -18,14 +18,9 @@ import com.nguyenphitan.BeetechLogin.repository.ProductRepository;
 public class ProductController {
 	@Autowired
 	ProductRepository productRepository;
-	
+
 	@GetMapping("")
-	public List<Product> products1() {
-		return productRepository.findAll();
-	}
-	
-	@PostMapping("")
-	public List<Product> products2() {
+	public List<Product> getAll() {
 		return productRepository.findAll();
 	}
 	
