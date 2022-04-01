@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+<meta charset="UTF-8">
+<title>Giỏ hàng</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+	<h1>Các sản phẩm trong giỏ hàng</h1>
+	<table id="t-table" border="1px">
+		<tr>
+			<th>STT</th>
+			<th>Tên sản phẩm</th>
+			<th>Chi tết</th>
+			<th>Xóa sản phẩm</th>
+		</tr>
+		<tr th:each="item, index: ${listProducts}">
+			<td th:utext="${index.count}"></td>
+			<td th:utext="${item.product.photos}"></td>
+			<td> <a th:href="@{/public/details(id=${index.current.product.id})}">Xem chi tiết</a> </td>
+			<td style="text-align: center"> 
+				<span class="cart-id" style="display: none" th:text="${item.id}"></span>
+				<button class="t-delete">Xóa</button> 
+			</td>
+		</tr>
+	</table>
+	
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// Click xóa sản phẩm trong giỏ hàng:
+			$('.t-delete').click(function(e) {
+				// Lấy cart id của sản phẩm:
+				let cartId = Number($(e.target).prev().text());
+				
+				// Gọi đến API, xóa sản phẩm trong giỏ hàng theo cartId:
+				$.ajax({
+		            type: "DELETE",
+		            url: `http://localhost:8080/cart/${cartId}`,
+		            success: function (response) {
+		                alert("Xóa thành công.");
+		                window.location.reload();
+		            }
+		        });
+					
+			})
+			
+		})
+	
+	</script>
+</body>
+</html>

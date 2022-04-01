@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+<meta charset="UTF-8">
+<title>Chi tiết sản phẩm</title>
+</head>
+<body>
+	<h1>Chi tiết sản phẩm</h1>
+	<table id="t-table" border="1px">
+		<tr>
+			<th>Chi tiết</th>
+		</tr>
+		<tr>
+			<td th:utext="${product.get().photos}"></td>
+		</tr>
+	</table>
+</body>
+</html>

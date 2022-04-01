@@ -1,5 +1,8 @@
 package com.nguyenphitan.BeetechAPI.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,10 +32,10 @@ public class AuthController {
 	private JwtTokenProvider tokenProvider;
 	
 	/*
-	 * Đăng nhập, xác thực
+	 * Đăng nhập, xác thực -> lưu token vào session
 	 */
 	@PostMapping("/login")
-	public LoginResponse authenticateUser(@RequestParam("username") String username, @RequestParam("password") String password) {
+	public LoginResponse authenticateUser(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request) {
 		// Tạo ra LoginRequest từ username và password nhận được từ client
 		LoginRequest loginRequest = new LoginRequest(username, password);
 		// Xác thực thông tin người dùng Request lên:
@@ -49,7 +52,16 @@ public class AuthController {
 		
 		// Trả về jwt cho người dùng
 		String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+		
+		// Lưu jwt vào session:
+		HttpSession session = request.getSession();
+		session.setAttribute("token", jwt);
+		
 		return new LoginResponse(jwt);
 	}
+	
+	/*
+	 * Đăng xuất -> xóa token khỏi session
+	 */
 	
 }

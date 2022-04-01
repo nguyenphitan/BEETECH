@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
 
 import com.nguyenphitan.BeetechAPI.jwt.JwtAuthenticationFilter;
 
@@ -45,15 +44,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	            .and()
 	        .csrf()
 	            .disable();
-    	
     	http
            .authorizeRequests() 
            		.antMatchers("/api/v1/auth/**").permitAll();
     	http
     		.authorizeRequests()
-    			.antMatchers("/swagger-ui.html").permitAll();
+    			.antMatchers(
+    					"/",
+    					"/swagger-ui.html", 
+    					"/vendor/**", 
+                		"/css/**", 
+                		"/js/**", 
+                		"/fonts/**", 
+                		"/images/**").permitAll();
     	http.authorizeRequests()
-        		.antMatchers("/public/**").hasAnyAuthority("ROLE_USER");
-                   
+        		.antMatchers("/public/**").permitAll();
+    	http.authorizeRequests()
+        		.antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN");
+    	http.authorizeRequests().anyRequest().authenticated();
     }
 }
