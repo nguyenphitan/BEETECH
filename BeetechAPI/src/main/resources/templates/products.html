@@ -39,6 +39,7 @@
 				<!-- Cách 2 -->
 				<span style="display: none;" class="t-product-id" th:text="${index.current.id}"></span>
 				<button class="t-add-to-cart">Thêm</button>
+				<span style="display: none" class="t-token" th:text="${session.token == null ? 'null' : session.token}"></span>
 				
 				<form style="display: none;" class="t-add-to-cart-clone" action="/"></form>
 				
@@ -51,24 +52,48 @@
 			// Thêm vào giỏ hàng:
 			$('.t-add-to-cart').click(function (e) {
 				let productId = Number($(e.target).prev().text());
-				
-				// Gọi đến API, post dữ liệu:
-				$.ajax({
-                    type: "POST",
-                    url: "http://localhost:8080/cart",
-                    // async: false,
-                    data: JSON.stringify(productId),
-                    dataType: "json",
-                    contentType: "application/json",
-                    success: function (response) {
-                    	alert("Thêm thành công.");
-                    	window.location.reload();
-                    },
-                    error: function(reject) {
-                        alert("Bạn chưa đăng nhập.");
-                        $(".t-add-to-cart-clone").submit();
-                    }
-                });	
+				// Kiểm tra chuỗi token:
+				// Nếu chưa đăng nhập (chưa có token) -> thêm vào list sản phẩm -> đẩy lên session.
+				// Nếu đã đăng nhập -> thêm danh sách sản phẩm vào bảng cart database.
+				let token = $(e.target).next().text();
+				if( token === "null" ) {
+					// Gọi đến API clone, post dữ liệu vào session:
+					$.ajax({
+	                    type: "POST",
+	                    url: "http://localhost:8080/clone/cart",
+	                    // async: false,
+	                    data: JSON.stringify(productId),
+	                    dataType: "json",
+	                    contentType: "application/json",
+	                    success: function (response) {
+	                    	alert("Thêm thành công.");
+	                    	window.location.reload();
+	                    },
+	                    error: function(reject) {
+	                        alert("Không thành công.");
+	                    }
+	                });	
+					
+				}
+				else {
+					// Gọi đến API, post dữ liệu:
+					$.ajax({
+	                    type: "POST",
+	                    url: "http://localhost:8080/cart",
+	                    // async: false,
+	                    data: JSON.stringify(productId),
+	                    dataType: "json",
+	                    contentType: "application/json",
+	                    success: function (response) {
+	                    	alert("Thêm thành công.");
+	                    	window.location.reload();
+	                    },
+	                    error: function(reject) {
+	                        alert("Bạn chưa đăng nhập.");
+	                        $(".t-add-to-cart-clone").submit();
+	                    }
+	                });	
+				}
 					
 			});
 			

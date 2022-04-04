@@ -50,12 +50,18 @@ public class HomeController {
 		// Kiểm tra token:
 		HttpSession session = request.getSession();
 		String token = (String) session.getAttribute("token");
+
 		// Khi chưa đăng nhập: (chưa có token)
 		if(token == null) {
-			modelAndView.addObject("totalQuantity", 0);
+			List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
+			int totalQuantity = 0;
+			if(cartsSession != null) {
+				totalQuantity = cartsSession.size();
+			}
+			modelAndView.addObject("totalQuantity", totalQuantity);
 		}
 		else {
-			// Load số lượng sản phẩm trong giỏ hàng
+			// Load số lượng sản phẩm trong giỏ hàng:
 			List<Cart> listProductInCarts = cartRepository.findAll();
 			int totalQuantity = listProductInCarts.size();
 			modelAndView.addObject("totalQuantity", totalQuantity);			
@@ -72,17 +78,44 @@ public class HomeController {
 	}
 	
 	@GetMapping("/list-cart")
-	public ModelAndView cartPage() {
+	public ModelAndView cartPage(HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView("carts");
+		
+		HttpSession session = request.getSession();
+		String token = (String) session.getAttribute("token");
+		
 		List<CartResponse> listProducts = new ArrayList<CartResponse>();
-		List<Cart> listCarts = cartRepository.findAll();
-		for(Cart cart: listCarts) {
-			Long idProductInCart = cart.getId();
-			Long idProduct = cart.getId_product();
-			Product product = productRepository.getById(idProduct);
-			CartResponse cartResponse = new CartResponse(idProductInCart, product);
-			listProducts.add(cartResponse);
+		
+		// Nếu chưa có token -> get list cart từ session
+		if(token == null) {
+			List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
+			if( cartsSession == null ) {
+				CartResponse cartResponse = new CartResponse(-1L, new Product(-1L, "Chưa có sản phẩm nào"));
+				listProducts.add(cartResponse);
+				modelAndView.addObject("listProducts", listProducts);
+				return modelAndView;
+			}
+			
+			for(Cart cart: cartsSession) {
+				Long idCart = cart.getId();
+				Long idProduct = cart.getId_product();
+				Product product = productRepository.getById(idProduct);
+				CartResponse cartResponse = new CartResponse(idCart, product);
+				listProducts.add(cartResponse);
+			}		
 		}
+		else {	
+			// Nếu đã có token -> get list cart từ database
+			List<Cart> listCarts = cartRepository.findAll();
+			for(Cart cart: listCarts) {
+				Long idCart = cart.getId();
+				Long idProduct = cart.getId_product();
+				Product product = productRepository.getById(idProduct);
+				CartResponse cartResponse = new CartResponse(idCart, product);
+				listProducts.add(cartResponse);
+			}			
+		}
+		
 		modelAndView.addObject("listProducts", listProducts);
 		return modelAndView;
 	}

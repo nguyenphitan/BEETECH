@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 		"/fonts/**", 
                 		"/images/**").permitAll();
     	http.authorizeRequests()
-        		.antMatchers("/public/**").permitAll();
+        		.antMatchers("/public/**", "/list-cart", "/cart", "/clone/**").permitAll();
     	http.authorizeRequests()
         		.antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN");
     	http.authorizeRequests().anyRequest().authenticated();

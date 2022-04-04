@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.nguyenphitan.BeetechAPI.custom.CustomUserDetails;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
@@ -35,7 +36,7 @@ public class AuthController {
 	 * Đăng nhập, xác thực -> lưu token vào session
 	 */
 	@PostMapping("/login")
-	public LoginResponse authenticateUser(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request) {
+	public RedirectView authenticateUser(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request) {
 		// Tạo ra LoginRequest từ username và password nhận được từ client
 		LoginRequest loginRequest = new LoginRequest(username, password);
 		// Xác thực thông tin người dùng Request lên:
@@ -57,7 +58,7 @@ public class AuthController {
 		HttpSession session = request.getSession();
 		session.setAttribute("token", jwt);
 		
-		return new LoginResponse(jwt);
+		return new RedirectView("/synchronized/cart");
 	}
 	
 	/*
