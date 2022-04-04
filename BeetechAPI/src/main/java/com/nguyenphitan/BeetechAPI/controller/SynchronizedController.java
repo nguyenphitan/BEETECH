@@ -29,7 +29,9 @@ public class SynchronizedController {
 		HttpSession session = request.getSession();
 		// Get danh sách giỏ hàng trên session lưu vào database:
 		List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
-		cartRepository.saveAll(cartsSession);
+		if( cartsSession != null ) {
+			cartRepository.saveAll(cartsSession);
+		}
 		return new RedirectView("/public/list-products");
 	}
 	

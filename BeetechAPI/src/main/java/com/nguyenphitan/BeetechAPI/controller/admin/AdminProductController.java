@@ -37,8 +37,13 @@ public class AdminProductController {
 	ProductRepository productRepository;
 	
 	@PostMapping()
-	public RedirectView addImage(@RequestParam("image") MultipartFile multipartFile) throws IOException  {
-		Path staticPath = Paths.get("static");
+	public RedirectView addImage(
+			@RequestParam("name") String name, 
+			@RequestParam("price") Double price, 
+			@RequestParam("quantity") Long quantity,
+			@RequestParam("image") MultipartFile multipartFile) throws IOException  
+	{
+		Path staticPath = Paths.get("src/main/resources/static");
         Path imagePath = Paths.get("images");
         // Kiểm tra tồn tại hoặc tạo thư mục /static/images
         if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
@@ -50,6 +55,9 @@ public class AdminProductController {
         }
         
         Product product = new Product();
+        product.setName(name);
+        product.setPrice(price);
+        product.setQuantity(quantity);
         product.setPhotos(imagePath.resolve(multipartFile.getOriginalFilename()).toString());
         productRepository.save(product);
         

@@ -90,7 +90,7 @@ public class HomeController {
 		if(token == null) {
 			List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
 			if( cartsSession == null ) {
-				CartResponse cartResponse = new CartResponse(-1L, new Product(-1L, "Chưa có sản phẩm nào"));
+				CartResponse cartResponse = new CartResponse(-1L, new Product(-1L, "Chưa có sản phẩm nào", 0.0, 0L, ""));
 				listProducts.add(cartResponse);
 				modelAndView.addObject("listProducts", listProducts);
 				return modelAndView;

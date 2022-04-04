@@ -11,12 +11,16 @@
 	<table id="t-table" border="1px">
 		<tr>
 			<th>STT</th>
+			<th>Hình ảnh</th>
 			<th>Tên sản phẩm</th>
 			<th>Chi tết</th>
 			<th>Xóa sản phẩm</th>
 		</tr>
 		<tr th:each="item, index: ${listProducts}">
 			<td th:utext="${index.count}"></td>
+			<td>
+				<img alt="ảnh sản phẩm" th:src="@{${item.product.photos}}" width="90px" height="113.3px">
+			</td>
 			<td th:utext="${item.product.photos}"></td>
 			<td> <a th:href="@{/public/details(id=${index.current.product.id})}">Xem chi tiết</a> </td>
 			<td style="text-align: center"> 

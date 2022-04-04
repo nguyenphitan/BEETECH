@@ -6,7 +6,10 @@
 </head>
 <body>
 	<form action="/admin/api/v1/products" enctype = "Multipart/form-data"  method="POST">
-		Photos: <input type="file" name="image"/> <br>
+		Tên sản phẩm: <input type="text" placeholder="Nhập tên sản phẩm" name="name" required/> <br>
+		Giá sản phẩm: <input type="number" placeholder="Nhập giá " name="price" required/> <br>
+		Số lượng: <input type="number" placeholder="Nhập số lượng" name="quantity" required/> <br>
+		Hình ảnh: <input type="file" name="image"/> <br>
 		<input type="submit" value="Thêm" />
 	</form>
 </body>
