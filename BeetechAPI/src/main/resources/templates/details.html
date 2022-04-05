@@ -8,10 +8,18 @@
 	<h1>Chi tiết sản phẩm</h1>
 	<table id="t-table" border="1px">
 		<tr>
-			<th>Chi tiết</th>
+			<th>Hình ảnh</th>
+			<th>Tên sản phẩm</th>
+			<th>Đơn giá</th>
+			<th>Số lượng còn lại</th>
 		</tr>
 		<tr>
-			<td th:utext="${product.get().photos}"></td>
+			<td>
+				<img alt="Ảnh sản phẩm" th:src="@{${product.get().photos}}" width="90px" height="113.3px">
+			</td>
+			<td th:utext="${product.get().name}"></td>
+			<td th:utext="${product.get().price}"></td>
+			<td th:utext="${product.get().quantity}"></td>
 		</tr>
 	</table>
 </body>

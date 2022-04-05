@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <title>Giỏ hàng</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style type="text/css">
+	#t-table td {
+		padding: 0 16px;
+	}
+</style>
 </head>
 <body>
 	<h1>Các sản phẩm trong giỏ hàng</h1>
@@ -13,6 +18,7 @@
 			<th>STT</th>
 			<th>Hình ảnh</th>
 			<th>Tên sản phẩm</th>
+			<th>Đơn giá</th>
 			<th>Chi tết</th>
 			<th>Xóa sản phẩm</th>
 		</tr>
@@ -21,7 +27,8 @@
 			<td>
 				<img alt="ảnh sản phẩm" th:src="@{${item.product.photos}}" width="90px" height="113.3px">
 			</td>
-			<td th:utext="${item.product.photos}"></td>
+			<td th:utext="${item.product.name}"></td>
+			<td th:utext="${item.product.price}"></td>
 			<td> <a th:href="@{/public/details(id=${index.current.product.id})}">Xem chi tiết</a> </td>
 			<td style="text-align: center"> 
 				<span class="cart-id" style="display: none" th:text="${item.id}"></span>
