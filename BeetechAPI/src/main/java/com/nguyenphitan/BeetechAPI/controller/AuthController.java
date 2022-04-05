@@ -17,7 +17,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.nguyenphitan.BeetechAPI.custom.CustomUserDetails;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.LoginRequest;
-import com.nguyenphitan.BeetechAPI.payload.LoginResponse;
 
 import lombok.AllArgsConstructor;
 

@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.nguyenphitan.BeetechAPI.model.User;
+import com.nguyenphitan.BeetechAPI.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

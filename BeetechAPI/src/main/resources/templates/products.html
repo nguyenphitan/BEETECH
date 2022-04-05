@@ -13,6 +13,14 @@
 	#t-table tr th {
 		padding: 0 8px;
 	}
+	
+	input[type="number"] {
+		outline: none;
+		border: none;
+		width: 30px;
+		padding: 4px;
+	}
+	
 </style>
 </head>
 <body>
@@ -26,6 +34,7 @@
 			<th>Đơn giá</th>
 			<th>Số lượng còn lại</th>
 			<th>Xem chi tiết</th>
+			<th>Chọn số lượng</th>
 			<th>Thêm vào giỏ hàng</th>
 		</tr>
 		<tr th:each="product, index: ${products}">
@@ -35,9 +44,10 @@
 				<img alt="Ảnh sản phẩm" th:src="@{${product.photos}}" width="90px" height="113.3px">
 			</td>
 			<td th:utext="${product.price}"></td>
-			<td th:utext="${product.quantity}"></td>
+			<td class="t-quantity" th:utext="${product.quantity}"></td>
 			<td> <a th:href="@{/public/details(id=${index.current.id})}">Xem chi tiết</a> </td>
-			<td style="text-align: center"> 
+			<td class="t-quantity-selected"> <input class="t-quantity-input" type="number" name="quantitySelected" value="1"/> </td>
+			<td class="t-add-to-cart" style="text-align: center"> 
 				<!-- Cách 1 -->
 				<!-- <form action="/cart" method="POST">
 					<input style="display: none" type="text" name="id" th:value="${index.current.id}">
@@ -59,18 +69,34 @@
 		$(document).ready(function () {
 			// Thêm vào giỏ hàng:
 			$('.t-add-to-cart').click(function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				
+				// Kiểm tra số lượng đã chọn > số lượng còn lại hay không?
+				let quantitySelected = $(e.target).parents(".t-add-to-cart").siblings(".t-quantity-selected").children(".t-quantity-input").val();
+				let quantity = Number( $(e.target).parents(".t-add-to-cart").siblings(".t-quantity").text() );
+				if( quantity < quantitySelected ) {
+					alert("Số lượng sản phẩm không đủ để thêm.");
+					return;
+				}
+				
 				let productId = Number($(e.target).prev().text());
+				let productRequest = {};
+				productRequest['idProduct'] = productId;
+				productRequest['quantitySelected'] = quantitySelected;
 				// Kiểm tra chuỗi token:
 				// Nếu chưa đăng nhập (chưa có token) -> thêm vào list sản phẩm -> đẩy lên session.
 				// Nếu đã đăng nhập -> thêm danh sách sản phẩm vào bảng cart database.
 				let token = $(e.target).next().text();
+				
+				
 				if( token === "null" ) {
 					// Gọi đến API clone, post dữ liệu vào session:
 					$.ajax({
 	                    type: "POST",
 	                    url: "http://localhost:8080/clone/cart",
 	                    // async: false,
-	                    data: JSON.stringify(productId),
+	                    data: JSON.stringify(productRequest),
 	                    dataType: "json",
 	                    contentType: "application/json",
 	                    success: function (response) {
@@ -89,7 +115,7 @@
 	                    type: "POST",
 	                    url: "http://localhost:8080/cart",
 	                    // async: false,
-	                    data: JSON.stringify(productId),
+	                    data: JSON.stringify(productRequest),
 	                    dataType: "json",
 	                    contentType: "application/json",
 	                    success: function (response) {
@@ -97,14 +123,14 @@
 	                    	window.location.reload();
 	                    },
 	                    error: function(reject) {
-	                        alert("Bạn chưa đăng nhập.");
-	                        $(".t-add-to-cart-clone").submit();
+	                        alert("Không thành công.");
 	                    }
 	                });	
-				}
-					
+				}	
 			});
 			
+			
+		
 		}) 
 	</script>
 

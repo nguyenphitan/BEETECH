@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.nguyenphitan.BeetechAPI.custom.CustomUserDetails;
-import com.nguyenphitan.BeetechAPI.model.User;
+import com.nguyenphitan.BeetechAPI.entity.User;
 import com.nguyenphitan.BeetechAPI.repository.UserRepository;
 
 @Service

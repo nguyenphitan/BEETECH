@@ -2,7 +2,7 @@ package com.nguyenphitan.BeetechAPI.payload;
 
 import javax.validation.constraints.NotBlank;
 
-import com.nguyenphitan.BeetechAPI.model.Product;
+import com.nguyenphitan.BeetechAPI.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,5 +15,8 @@ public class CartResponse {
 	
 	@NotBlank
 	private Product product;
+	
+	@NotBlank
+	private Long quantity;
 	
 }

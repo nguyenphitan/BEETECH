@@ -2,22 +2,20 @@ package com.nguyenphitan.BeetechAPI.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.nguyenphitan.BeetechAPI.model.Cart;
-import com.nguyenphitan.BeetechAPI.model.Product;
+import com.nguyenphitan.BeetechAPI.entity.Cart;
+import com.nguyenphitan.BeetechAPI.entity.Product;
+import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.CartResponse;
 import com.nguyenphitan.BeetechAPI.repository.CartRepository;
 import com.nguyenphitan.BeetechAPI.repository.ProductRepository;
@@ -29,6 +27,9 @@ public class HomeController {
 	
 	@Autowired
 	CartRepository cartRepository;
+	
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
 	
 	@GetMapping("/")
 	public ModelAndView loginPage() {
@@ -47,9 +48,10 @@ public class HomeController {
 		ModelAndView modelAndView = new ModelAndView("products");
 		modelAndView.addObject("products", productRepository.findAll());
 		
-		// Kiểm tra token:
+		// Lấy user id user từ mã token:
 		HttpSession session = request.getSession();
 		String token = (String) session.getAttribute("token");
+		Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
 
 		// Khi chưa đăng nhập: (chưa có token)
 		if(token == null) {
@@ -61,10 +63,16 @@ public class HomeController {
 			modelAndView.addObject("totalQuantity", totalQuantity);
 		}
 		else {
-			// Load số lượng sản phẩm trong giỏ hàng:
-			List<Cart> listProductInCarts = cartRepository.findAll();
-			int totalQuantity = listProductInCarts.size();
-			modelAndView.addObject("totalQuantity", totalQuantity);			
+		// Khi đã đăng nhập
+		// Load số lượng sản phẩm trong giỏ hàng ứng với từng idUser:
+			List<Cart> listProductInCarts = cartRepository.findByIdUser(idUser);
+			if( listProductInCarts != null ) {
+				int totalQuantity = listProductInCarts.size();
+				modelAndView.addObject("totalQuantity", totalQuantity);							
+			}
+			else {
+				modelAndView.addObject("totalQuantity", 0);
+			}
 		}
 
 		return modelAndView;
@@ -81,39 +89,44 @@ public class HomeController {
 	public ModelAndView cartPage(HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView("carts");
 		
+		// Lấy user id user từ mã token:
 		HttpSession session = request.getSession();
 		String token = (String) session.getAttribute("token");
+		Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
 		
 		List<CartResponse> listProducts = new ArrayList<CartResponse>();
 		
 		// Nếu chưa có token -> get list cart từ session
 		if(token == null) {
 			List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
+			// Nếu chưa có sản phẩm -> hiển thị chưa có sản phẩm nào:
 			if( cartsSession == null ) {
-				CartResponse cartResponse = new CartResponse(-1L, new Product(-1L, "Chưa có sản phẩm nào", 0.0, 0L, ""));
-				listProducts.add(cartResponse);
-				modelAndView.addObject("listProducts", listProducts);
+				modelAndView.addObject("listProducts", null);
 				return modelAndView;
 			}
-			
+			// Nếu có sản phẩm -> hiển thị danh sách sản phẩm:
 			for(Cart cart: cartsSession) {
 				Long idCart = cart.getId();
-				Long idProduct = cart.getId_product();
+				Long idProduct = cart.getIdProduct();
+				Long quantity = cart.getQuantity();
 				Product product = productRepository.getById(idProduct);
-				CartResponse cartResponse = new CartResponse(idCart, product);
+				CartResponse cartResponse = new CartResponse(idCart, product, quantity);
 				listProducts.add(cartResponse);
 			}		
 		}
 		else {	
-			// Nếu đã có token -> get list cart từ database
-			List<Cart> listCarts = cartRepository.findAll();
-			for(Cart cart: listCarts) {
-				Long idCart = cart.getId();
-				Long idProduct = cart.getId_product();
-				Product product = productRepository.getById(idProduct);
-				CartResponse cartResponse = new CartResponse(idCart, product);
-				listProducts.add(cartResponse);
-			}			
+			// Nếu đã có token -> get giỏ hàng từ database tương ứng với idUser:
+			List<Cart> listCarts = cartRepository.findByIdUser(idUser);
+			if( listCarts != null ) {
+				for(Cart cart: listCarts) {
+					Long idCart = cart.getId();
+					Long idProduct = cart.getIdProduct();
+					Long quantity = cart.getQuantity();
+					Product product = productRepository.getById(idProduct);
+					CartResponse cartResponse = new CartResponse(idCart, product, quantity);
+					listProducts.add(cartResponse);
+				}							
+			}
 		}
 		
 		modelAndView.addObject("listProducts", listProducts);
