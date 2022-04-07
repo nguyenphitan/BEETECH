@@ -122,10 +122,15 @@
 			// Nhấn thanh toán:
 			$('.t-pay').click(function () {
 				let payMethod = $('input[name="t-pay-method"]:checked').attr('class');
-				
+				console.log(payMethod);
 				// Nếu thanh toán offline -> tạo đơn hàng:
 				if( payMethod === 't-pay-offline' ) {
-					
+					$.ajax({
+			            type: "POST",
+			            url: "http://localhost:8080/pay",
+			            success: function (response) {
+			            }
+			        });
 				}
 					
 				// Nếu thanh toán online -> kiểm tra liên kết ví điện tử 

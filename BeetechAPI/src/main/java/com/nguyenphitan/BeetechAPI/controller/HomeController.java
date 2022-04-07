@@ -51,9 +51,10 @@ public class HomeController {
 		// Lấy user id user từ mã token:
 		HttpSession session = request.getSession();
 		String token = (String) session.getAttribute("token");
-		Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
+		
 
 		// Khi chưa đăng nhập: (chưa có token)
+		// Load số lượng sản phẩm trên session:
 		if(token == null) {
 			List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
 			int totalQuantity = 0;
@@ -65,6 +66,7 @@ public class HomeController {
 		else {
 		// Khi đã đăng nhập
 		// Load số lượng sản phẩm trong giỏ hàng ứng với từng idUser:
+			Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
 			List<Cart> listProductInCarts = cartRepository.findByIdUser(idUser);
 			if( listProductInCarts != null ) {
 				int totalQuantity = listProductInCarts.size();
@@ -92,7 +94,6 @@ public class HomeController {
 		// Lấy user id user từ mã token:
 		HttpSession session = request.getSession();
 		String token = (String) session.getAttribute("token");
-		Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
 		
 		List<CartResponse> listProducts = new ArrayList<CartResponse>();
 		
@@ -116,6 +117,7 @@ public class HomeController {
 		}
 		else {	
 			// Nếu đã có token -> get giỏ hàng từ database tương ứng với idUser:
+			Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
 			List<Cart> listCarts = cartRepository.findByIdUser(idUser);
 			if( listCarts != null ) {
 				for(Cart cart: listCarts) {
@@ -132,5 +134,13 @@ public class HomeController {
 		modelAndView.addObject("listProducts", listProducts);
 		return modelAndView;
 	}
+	
+	@GetMapping("/bill")
+	public ModelAndView billPage() {
+		ModelAndView modelAndView = new ModelAndView("bill");
+		
+		return modelAndView;
+	}
+	
 	
 }

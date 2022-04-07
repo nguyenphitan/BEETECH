@@ -22,16 +22,28 @@ import com.nguyenphitan.BeetechAPI.payload.ProductRequest;
 public class CloneCartController {
 	@PostMapping("/cart")
 	public Cart addProductToCloneCart(@Valid @RequestBody ProductRequest productRequest, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		List<Cart> cartsSession = null;
+		if( session.getAttribute("cartsSession") != null ) {
+			cartsSession = (List<Cart>) session.getAttribute("cartsSession");
+			// update số lượng cho sản phẩm (Nếu sản phẩm đã có trong session):
+			for(Cart cart : cartsSession) {
+				if( cart.getIdProduct() == productRequest.getIdProduct() ) {
+					cart.setQuantity( cart.getQuantity() + productRequest.getQuantitySelected() );
+					session.setAttribute("cartsSession", cartsSession);
+					return cart;
+				}
+			}
+		}
+		else {
+			cartsSession = new ArrayList<Cart>();
+		}
+		// Thêm mới sản phẩm (Nếu sản phẩm không có trong session)
 		Cart cart = new Cart();
 		cart.setIdProduct(productRequest.getIdProduct());
 		cart.setIdUser(-1L);
 		cart.setQuantity(productRequest.getQuantitySelected());
 		
-		HttpSession session = request.getSession();
-		List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
-		if( cartsSession == null ) {
-			cartsSession = new ArrayList<Cart>();
-		}
 		cartsSession.add(cart);
 		session.setAttribute("cartsSession", cartsSession);
 		return cart;

@@ -35,10 +35,32 @@ public class SynchronizedController {
 		String token = (String) session.getAttribute("token");
 		Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
 		
-		// Get danh sách giỏ hàng trên session lưu vào database:
+		// Get danh sách giỏ hàng -> đồng bộ
 		List<Cart> cartsSession = (List<Cart>) session.getAttribute("cartsSession");
 		
-		// Nếu danh sách giỏ hàng khác null -> update user id vào từng sản phẩm rồi đồng bộ:
+		// 1. Update số lượng với những sản phẩm đã có trong giỏ hàng ứng với user id -> xóa sản phẩm khỏi session
+		if( cartsSession != null ) {
+			List<Cart> carts = cartRepository.findByIdUser(idUser);
+			for(Cart cartDB : carts) {
+				Long idProDB = cartDB.getIdProduct();
+				if( cartsSession != null ) {
+					for(Cart cartSS : cartsSession) {
+						Long idProSS = cartSS.getIdProduct();
+						if( idProDB == idProSS ) {
+							Long quantity = cartDB.getQuantity() + cartSS.getQuantity();
+							cartDB.setQuantity(quantity);
+							cartRepository.save(cartDB);
+							// Xóa sản phẩm khỏi session:
+							cartsSession.remove(cartSS);
+							break;
+						}
+					}
+				}
+			}
+			
+		}
+		
+		// 2. Thêm mới vào database với những sản phẩm chưa có trong giỏ hàng ứng với user id -> xóa sản phẩm khỏi session
 		if( cartsSession != null ) {
 			for(Cart cart : cartsSession) {
 				cart.setIdUser(idUser);

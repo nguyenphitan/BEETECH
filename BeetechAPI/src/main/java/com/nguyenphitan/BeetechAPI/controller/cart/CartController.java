@@ -47,15 +47,6 @@ public class CartController {
 		return productRepository.findAllById(productIds);
 	}
 	
-//	@PostMapping()
-//	public RedirectView addToCart(@RequestParam("id") Long id) throws IOException  {
-//		Cart cart = new Cart();
-//		cart.setId_product(id);
-//		cart.setQuantity(1L);
-//		cartRepository.save(cart);
-//		return new RedirectView("/public/list-products");
-//	}
-	
 	@PostMapping()
 	public Cart addToCart(@Valid @RequestBody ProductRequest productRequest, HttpServletRequest request)  {
 		// Lấy user id user từ mã token:
@@ -66,10 +57,10 @@ public class CartController {
 		Long quantitySelected = productRequest.getQuantitySelected();
 		
 		// Update số lượng của sản phẩm trong bảng sản phẩm:
-		Product product = productRepository.getById(idProduct);
-		Long quantityProduct = product.getQuantity() - quantitySelected;
-		product.setQuantity(quantityProduct);
-		productRepository.save(product);
+//		Product product = productRepository.getById(idProduct);
+//		Long quantityProduct = product.getQuantity() - quantitySelected;
+//		product.setQuantity(quantityProduct);
+//		productRepository.save(product);
 		
 		// Update số lượng sản phẩm trong giỏ hàng:
 		// Tìm kiếm sản phẩm có id = id sản phẩm được thêm:
