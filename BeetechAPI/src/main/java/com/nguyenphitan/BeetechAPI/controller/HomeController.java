@@ -15,10 +15,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.nguyenphitan.BeetechAPI.entity.Cart;
 import com.nguyenphitan.BeetechAPI.entity.Product;
+import com.nguyenphitan.BeetechAPI.entity.User;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.CartResponse;
 import com.nguyenphitan.BeetechAPI.repository.CartRepository;
 import com.nguyenphitan.BeetechAPI.repository.ProductRepository;
+import com.nguyenphitan.BeetechAPI.repository.UserRepository;
 
 @Controller
 public class HomeController {
@@ -30,6 +32,9 @@ public class HomeController {
 	
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired 
+	UserRepository userRepository;
 	
 	@GetMapping("/")
 	public ModelAndView loginPage() {
@@ -118,6 +123,7 @@ public class HomeController {
 		else {	
 			// Nếu đã có token -> get giỏ hàng từ database tương ứng với idUser:
 			Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
+			User user = userRepository.getById(idUser);
 			List<Cart> listCarts = cartRepository.findByIdUser(idUser);
 			if( listCarts != null ) {
 				for(Cart cart: listCarts) {
@@ -129,18 +135,14 @@ public class HomeController {
 					listProducts.add(cartResponse);
 				}							
 			}
+			modelAndView.addObject("userInfo", user);
 		}
 		
+		session.setAttribute("listProducts", listProducts);
 		modelAndView.addObject("listProducts", listProducts);
 		return modelAndView;
 	}
 	
-	@GetMapping("/bill")
-	public ModelAndView billPage() {
-		ModelAndView modelAndView = new ModelAndView("bill");
-		
-		return modelAndView;
-	}
 	
 	
 }
