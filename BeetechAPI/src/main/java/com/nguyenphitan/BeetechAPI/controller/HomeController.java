@@ -47,6 +47,9 @@ public class HomeController {
 		return modelAndView;
 	}
 	
+	/*
+	 * Danh sách sản phẩm
+	 */
 	@GetMapping("/public/list-products")
 	public ModelAndView productPage(HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView("products");
@@ -84,6 +87,9 @@ public class HomeController {
 		return modelAndView;
 	}
 	
+	/*
+	 * Chi tiết sản phẩm
+	 */
 	@GetMapping("/public/details")
 	public ModelAndView detailPage(@RequestParam("id") Long id) {
 		ModelAndView modelAndView = new ModelAndView("details");
@@ -91,6 +97,9 @@ public class HomeController {
 		return modelAndView;
 	}
 	
+	/*
+	 * Danh sách giỏ hàng
+	 */
 	@GetMapping("/list-cart")
 	public ModelAndView cartPage(HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView("carts");
@@ -117,7 +126,7 @@ public class HomeController {
 				Product product = productRepository.getById(idProduct);
 				CartResponse cartResponse = new CartResponse(idCart, product, quantity);
 				listProducts.add(cartResponse);
-			}		
+			}
 		}
 		else {	
 			// Nếu đã có token -> get giỏ hàng từ database tương ứng với idUser:
@@ -142,6 +151,49 @@ public class HomeController {
 		return modelAndView;
 	}
 	
+	/*
+	 * Giao diện hóa đơn
+	 */
+	@GetMapping("/bill/**")
+	public ModelAndView billPage(HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView("bill");
+		
+		// Lấy user id user từ mã token:
+		HttpSession session = request.getSession();
+		String token = (String) session.getAttribute("token");
+		List<CartResponse> listProducts = new ArrayList<CartResponse>();
+
+		// Gọi vào database, load tất cả các sản phẩm trong giỏ hàng lên bill
+		Long idUser = jwtTokenProvider.getUserIdFromJWT(token);
+		User user = userRepository.getById(idUser);
+		List<Cart> listCarts = cartRepository.findByIdUser(idUser);
+		if( listCarts != null ) {
+			for(Cart cart: listCarts) {
+				Long idCart = cart.getId();
+				Long idProduct = cart.getIdProduct();
+				Long quantity = cart.getQuantity();
+				Product product = productRepository.getById(idProduct);
+				CartResponse cartResponse = new CartResponse(idCart, product, quantity);
+				listProducts.add(cartResponse);
+			}							
+		}
+		// Load thông tin khách hàng lên bill
+		modelAndView.addObject("userInfo", user);
+		
+		session.setAttribute("listProducts", listProducts);
+		modelAndView.addObject("listProducts", listProducts);
+		return modelAndView;
+	}
+	
+	
+	/*
+	 * Giao diện đăng ký ví điện tử
+	 */
+	@GetMapping("/wallets/register")
+	public ModelAndView registerWallet() {
+		ModelAndView modelAndView = new ModelAndView("registerWallet");
+		return modelAndView;
+	}
 	
 	
 }

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+<meta charset="UTF-8">
+<title>Hóa đơn</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style type="text/css">
+	#t-table td {
+		padding: 0 16px;
+	}
+	
+	#t-bill table th,
+	#t-bill table td {
+		padding: 4px 16px;
+	}
+	
+</style>
+</head>
+<body>
+	<!-- Hóa đơn thanh toán -->
+	<div id="t-bill">
+		<h3>Hóa đơn thanh toán:</h3>
+		<table style="text-align: left;">
+			<thead>
+				<tr>
+					<th style="width: 30px;">STT</th>
+					<th>Tên sản phẩm</th>
+					<th>Đơn giá</th>
+					<th>Số lượng</th>
+					<th>Thành tiền</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<tr th:each="cartResponse, index: ${listProducts}">
+					<td th:utext="${index.count}"></td>
+					<td th:utext="${cartResponse.product.name}"></td>
+					<td style="text-align: right;" th:utext="${cartResponse.product.price}"></td>
+					<td th:utext="${cartResponse.quantity}"></td>
+					<td class="t-price" style="text-align: right;" th:utext="${cartResponse.quantity * cartResponse.product.price}"></td>
+				</tr>
+				<tr>
+					<td colspan="4">Tổng:</td>
+					<td style="text-align: right;" class="t-total-bill">0</td>
+				</tr>
+			</tbody>
+			
+			<tfoot>
+				<tr>
+					<td colspan="2">Thông tin khách hàng:</td>
+					<td colspan="3" th:text="${userInfo.username}"></td>
+				</tr>
+				<tr>
+					<td colspan="5">
+						<button class="t-confirm">Xác nhận</button>
+					</td>
+				</tr>
+			</tfoot>
+			
+		</table>
+		
+	</div>
+	
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// Tính tổng tiền:
+			let prices = $(".t-price");
+			let totalPrice = 0;
+			for (let price of prices) {
+				totalPrice += Number( $(price).text() );
+			}
+			$('.t-total-price').text(totalPrice);
+			// Tổng tiền hóa đơn:
+			$('.t-total-bill').text(totalPrice + ".0");
+			
+			// Nhấn xác nhận thông tin:
+			$('.t-confirm').click(function () {
+				let pathname = window.location.pathname;
+				// Kiểm tra thanh toán online hay offline ?
+				// 1. Thanh toán online -> tạo một transaction:
+				if( pathname === "/bill/online" ) {
+					// Kiểm tra số dư hiện tại của ví có đủ để thanh toán hay không?
+					
+					
+					// Tạo entity Transaction (tạm thời fix cứng id người bán là 3 - web bán hàng của 1 người)
+					let transactionEntity = {};
+					
+					
+					
+				}
+				
+					
+				// 2. Thanh toán offline -> làm bước tiếp theo
+				// Xóa danh sách sản phẩm đã thanh toán trong giỏ hàng
+				// Update số lượng sản phẩm còn lại trong database
+				$.ajax({
+		            type: "DELETE",
+		            url: `http://localhost:8080/pay`,
+		            success: function (response) {
+		            	alert("Đặt hàng thành công, đơn hàng sẽ được giao trong vài ngày tới.");
+		            	window.location.href = "http://localhost:8080/public/list-products";
+		            }
+		        });
+				
+				
+			})
+			
+		})
+	
+	</script>
+</body>
+</html>

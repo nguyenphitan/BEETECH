@@ -84,51 +84,8 @@
 		</table>
 	</div>
 	
-	<!-- Hóa đơn thanh toán -->
-	<div id="t-bill">
-		<h3>Hóa đơn thanh toán:</h3>
-		<table style="text-align: left;">
-			<thead>
-				<tr>
-					<th style="width: 30px;">STT</th>
-					<th>Tên sản phẩm</th>
-					<th>Đơn giá</th>
-					<th>Số lượng</th>
-					<th>Thành tiền</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				<tr th:each="cartResponse, index: ${listProducts}">
-					<td th:utext="${index.count}"></td>
-					<td th:utext="${cartResponse.product.name}"></td>
-					<td style="text-align: right;" th:utext="${cartResponse.product.price}"></td>
-					<td th:utext="${cartResponse.quantity}"></td>
-					<td style="text-align: right;" th:utext="${cartResponse.quantity * cartResponse.product.price}"></td>
-				</tr>
-				<tr>
-					<td colspan="4">Tổng:</td>
-					<td style="text-align: right;" class="t-total-bill">0</td>
-				</tr>
-			</tbody>
-			
-			<tfoot>
-				<tr>
-					<td colspan="2">Thông tin khách hàng:</td>
-					<td colspan="3" th:text="${userInfo.username}"></td>
-				</tr>
-				<tr>
-					<td colspan="5">
-						<button class="t-confirm">Xác nhận</button>
-					</td>
-				</tr>
-			</tfoot>
-			
-		</table>
-		
-	</div>
 	
-	
+	<!-- Script -->
 	<script type="text/javascript">
 		$(document).ready(function() {
 			// Token:
@@ -215,13 +172,18 @@
 				let payMethod = $('input[name="t-pay-method"]:checked').attr('class');
 				// Nếu thanh toán offline -> hiển thị đơn hàng:
 				if( payMethod === 't-pay-offline' ) {
-					$('#t-bill').fadeIn();
-					$('#t-cart').hide();
+					window.location.href = "http://localhost:8080/bill/offline";
 				}
-					
+				else if( payMethod === 't-pay-online' ) {
 				// Nếu thanh toán online -> kiểm tra liên kết ví điện tử 
 				// Nếu chưa -> liên kết ví
+					window.location.href = "http://localhost:8080/wallets/register";
+				
+				
 				// Nếu đã liên kết -> thanh toán -> tạo đơn hàng
+					
+				}
+				
 			});
 			
 			

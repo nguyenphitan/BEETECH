@@ -3,9 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Liên kết ví điện tử</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style type="text/css">
+	input {
+		border: none;
+		outline: none;
+	}
+</style>
 </head>
 <body>
-	<h1>Nhập thông tin</h1>
+	<h1>Nhập thông tin liên kết</h1>
 	<table border="1px">
 		<tr>
 			<td>Email:</td>
@@ -28,11 +35,84 @@
 		<tr>
 			<td>Loại tài khoản:</td>
 			<td>
-				<input type="radio" name="roleAccount" checked/> Người bán hàng <br>
-				<input type="radio" name="roleAccount"/> Khách hàng <br>
+				<input class="MERCHANT" type="radio" name="roleAccount" checked/> Người bán hàng <br>
+				<input class="CUSTOMER" type="radio" name="roleAccount"/> Khách hàng <br>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="text-align: center;">
+				<button class="register-btn">Đăng ký</button>
 			</td>
 		</tr>
 	</table>
 	
+	
+	
+	<!-- Script -->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			// Nhấn nút đăng ký tài khoản:
+			$('.register-btn').click(function () {
+				// 1. Lấy các thông tin:
+				console.log($('input[name="roleAccount"]:checked').attr('class'))
+				let email = $('input[name="email"]').val();
+				let name = $('input[name="name"]').val();
+				let phoneNumber = $('input[name="phoneNumber"]').val();
+				let role = $('input[name="roleAccount"]:checked').attr('class');
+				
+				console.log(email);
+				console.log(name);
+				console.log(phoneNumber);
+				console.log(role);
+				
+				// Validate:
+				if(email == '') {
+					alert('Email không được để trống.');
+					return;
+				}
+				if(name == '') {
+					alert('Tên không được để trống.');
+					return;
+				}
+				if(phoneNumber == '') {
+					alert('Số điện không được để trống.');
+					return;
+				}
+				
+				// 2. Build thành object:
+				let userAccount = {};
+				userAccount['email'] = email;
+				userAccount['name'] = name;
+				userAccount['phoneNumber'] = phoneNumber;
+				userAccount['role'] = role;
+				
+				// 3. Gọi api tạo tài khoản:
+				$.ajax({
+	                type: "POST",
+	                url: "http://localhost:8080/api/v1/accounts",
+	                // async: false,
+	                data: JSON.stringify(userAccount),
+	                dataType: "json",
+	                contentType: "application/json",
+	                success: function (response) {
+	                	alert("Liên kết tài khoản thành công.");
+	                	window.location.href = "http://localhost:8080/bill/online"
+	                	console.log(response);
+	                },
+	                error: function(reject) {
+	                    alert("Liên kết không thành công.");
+	                }
+	            });	
+				
+			});
+		
+		//
+				
+			
+		})
+	
+	
+	
+	</script>
 </body>
 </html>
