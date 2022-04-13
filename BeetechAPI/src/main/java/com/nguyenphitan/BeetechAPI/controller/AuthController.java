@@ -2,21 +2,26 @@ package com.nguyenphitan.BeetechAPI.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.nguyenphitan.BeetechAPI.custom.CustomUserDetails;
+import com.nguyenphitan.BeetechAPI.entity.User;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.LoginRequest;
+import com.nguyenphitan.BeetechAPI.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -30,6 +35,12 @@ public class AuthController {
 	
 	@Autowired
 	private JwtTokenProvider tokenProvider;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	/*
 	 * Đăng nhập, xác thực -> lưu token vào session
@@ -63,5 +74,19 @@ public class AuthController {
 	/*
 	 * Đăng xuất -> xóa token khỏi session
 	 */
+	
+	
+	/*
+	 * Đăng ký tài khoản
+	 */
+	@PostMapping("/register")
+	public User createUser(@Valid @RequestBody LoginRequest loginRequest) {
+		User user = new User();
+		user.setUsername(loginRequest.getUsername());
+		user.setPassword(passwordEncoder.encode(loginRequest.getPassword()));
+		user.setRole("USER");
+		userRepository.save(user);
+		return user;
+	}
 	
 }

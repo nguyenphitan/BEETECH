@@ -76,6 +76,7 @@
 					<td colspan="8"> 
 						<strong>Thanh toán:</strong> 
 						<button class="t-pay">Mua Ngay</button>
+						<span class="senderId" style="display: none;" th:text="${session.userAccount == null ? '-1' : session.userAccount.userId}"></span>
 					</td>
 				</tr>
 				
@@ -175,33 +176,25 @@
 					window.location.href = "http://localhost:8080/bill/offline";
 				}
 				else if( payMethod === 't-pay-online' ) {
-				// Nếu thanh toán online -> kiểm tra liên kết ví điện tử 
-				// Nếu chưa -> liên kết ví
-					window.location.href = "http://localhost:8080/wallets/register";
-				
-				
-				// Nếu đã liên kết -> thanh toán -> tạo đơn hàng
+					// Nếu thanh toán online
+					// Kiểm tra liên kết ví điện tử hay chưa:
+					let senderId = Number($('.senderId').text());
+					
+					if( senderId === -1 ) {
+						// Nếu chưa -> liên kết ví
+						window.location.href = "http://localhost:8080/wallets/register";
+					}
+					else {
+						// Nếu đã liên kết -> tạo đơn hàng -> thanh toán
+						console.log('Đã có tài khoản liên kết');
+						window.location.href = "http://localhost:8080/bill/online";
+						
+					}
 					
 				}
 				
 			});
 			
-			
-			// Nhấn xác nhận thông tin:
-			$('.t-confirm').click(function () {
-				// Xóa danh sách sản phẩm đã thanh toán trong giỏ hàng
-				// Update số lượng sản phẩm còn lại trong database
-				$.ajax({
-		            type: "DELETE",
-		            url: `http://localhost:8080/pay`,
-		            success: function (response) {
-		            	alert("Đặt hàng thành công, đơn hàng sẽ được giao trong vài ngày tới.");
-		                window.location.reload();
-		            }
-		        });
-				
-				
-			})
 			
 		})
 	

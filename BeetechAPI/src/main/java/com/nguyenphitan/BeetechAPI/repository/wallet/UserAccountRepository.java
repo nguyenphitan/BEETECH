@@ -7,6 +7,8 @@ import com.nguyenphitan.BeetechAPI.entity.wallet.UserAccount;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
+	UserAccount findByUserId(Long userId);
+	
 	UserAccount findByEmail(String email);
 	
 	UserAccount findByPhoneNumber(String phoneNumber);

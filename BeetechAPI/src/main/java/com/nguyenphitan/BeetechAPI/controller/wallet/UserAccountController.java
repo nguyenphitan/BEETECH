@@ -1,5 +1,6 @@
 package com.nguyenphitan.BeetechAPI.controller.wallet;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class UserAccountController {
 	UserAccountService userAccountService;
 	
 	@PostMapping()
-	public UserAccount register(@Valid @RequestBody UserAccount userAccount) {
-		return userAccountService.register(userAccount);
+	public UserAccount register(@Valid @RequestBody UserAccount userAccount, HttpServletRequest request) {
+		return userAccountService.register(userAccount, request);
 	}
 	
 }

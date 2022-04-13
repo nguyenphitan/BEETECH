@@ -16,6 +16,9 @@ public class UserAccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotBlank
+	private Long userId;
 
 	@NotBlank
 	private String name;

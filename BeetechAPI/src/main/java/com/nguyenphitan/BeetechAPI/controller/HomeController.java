@@ -15,11 +15,13 @@ import org.springframework.web.servlet.ModelAndView;
 import com.nguyenphitan.BeetechAPI.entity.Cart;
 import com.nguyenphitan.BeetechAPI.entity.Product;
 import com.nguyenphitan.BeetechAPI.entity.User;
+import com.nguyenphitan.BeetechAPI.entity.wallet.UserAccount;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.CartResponse;
 import com.nguyenphitan.BeetechAPI.repository.CartRepository;
 import com.nguyenphitan.BeetechAPI.repository.ProductRepository;
 import com.nguyenphitan.BeetechAPI.repository.UserRepository;
+import com.nguyenphitan.BeetechAPI.repository.wallet.UserAccountRepository;
 
 @Controller
 public class HomeController {
@@ -34,6 +36,9 @@ public class HomeController {
 	
 	@Autowired 
 	UserRepository userRepository;
+	
+	@Autowired
+	UserAccountRepository userAccountRepository;
 	
 	@GetMapping("/")
 	public ModelAndView loginPage() {
@@ -144,6 +149,12 @@ public class HomeController {
 				}							
 			}
 			modelAndView.addObject("userInfo", user);
+
+		
+			// Kiểm tra xem đã liên kết ví điện tử hay chưa?
+			UserAccount userAccount = userAccountRepository.findByUserId(idUser);
+			session.setAttribute("userAccount", userAccount);
+		
 		}
 		
 		session.setAttribute("listProducts", listProducts);

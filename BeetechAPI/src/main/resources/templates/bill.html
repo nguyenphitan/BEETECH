@@ -53,6 +53,7 @@
 				<tr>
 					<td colspan="5">
 						<button class="t-confirm">Xác nhận</button>
+						<span class="t-senderId" style="display: none;" th:text="${session.userAccount == null ? '-1' : session.userAccount.userId}"></span>
 					</td>
 				</tr>
 			</tfoot>
@@ -70,7 +71,6 @@
 			for (let price of prices) {
 				totalPrice += Number( $(price).text() );
 			}
-			$('.t-total-price').text(totalPrice);
 			// Tổng tiền hóa đơn:
 			$('.t-total-bill').text(totalPrice + ".0");
 			
@@ -80,33 +80,63 @@
 				// Kiểm tra thanh toán online hay offline ?
 				// 1. Thanh toán online -> tạo một transaction:
 				if( pathname === "/bill/online" ) {
-					// Kiểm tra số dư hiện tại của ví có đủ để thanh toán hay không?
+					// Tạo entity Transaction (tạm thời fix cứng id người bán là 1 - web bán hàng của 1 người)
+					let senderId = Number( $('.t-senderId').text() );
+					let receiverId = 1;
+					let amount = totalPrice;
+					let date = new Date();
+					let status = "Thanh toán";
 					
-					
-					// Tạo entity Transaction (tạm thời fix cứng id người bán là 3 - web bán hàng của 1 người)
 					let transactionEntity = {};
+					transactionEntity['senderId'] = senderId;
+					transactionEntity['receiverId'] = receiverId;
+					transactionEntity['amount'] = amount;
+					transactionEntity['date'] = date;
+					transactionEntity['status'] = status;
 					
-					
-					
+					// Gọi API tiến hành transaction thanh toán:
+					$.ajax({
+	                    type: "POST",
+	                    url: "http://localhost:8080/api/v1/transactions",
+	                    async: false,
+	                    data: JSON.stringify(transactionEntity),
+	                    dataType: "json",
+	                    contentType: "application/json",
+	                    success: function (response) {
+	                    	console.log(response);
+	                    	deleteProductInCart();
+	                    	//alert("Thêm thành công.");
+	                    	//window.location.reload();
+	                    },
+	                    error: function(reject) {
+	                    	let message = reject.responseJSON.message;
+	                        alert(message);
+	                    	return;
+	                    }
+	                });	
+	
 				}
-				
-					
-				// 2. Thanh toán offline -> làm bước tiếp theo
-				// Xóa danh sách sản phẩm đã thanh toán trong giỏ hàng
-				// Update số lượng sản phẩm còn lại trong database
-				$.ajax({
-		            type: "DELETE",
-		            url: `http://localhost:8080/pay`,
-		            success: function (response) {
-		            	alert("Đặt hàng thành công, đơn hàng sẽ được giao trong vài ngày tới.");
-		            	window.location.href = "http://localhost:8080/public/list-products";
-		            }
-		        });
-				
-				
+				else {
+					// 2. Thanh toán offline:
+					deleteProductInCart();
+				}
+
 			})
 			
 		})
+		
+		function deleteProductInCart() {
+			// Xóa danh sách sản phẩm đã thanh toán trong giỏ hàng
+			// Update số lượng sản phẩm còn lại trong database
+			$.ajax({
+	            type: "DELETE",
+	            url: `http://localhost:8080/pay`,
+	            success: function (response) {
+	            	alert("Đặt hàng thành công, đơn hàng sẽ được giao trong vài ngày tới.");
+	            	window.location.href = "http://localhost:8080/public/list-products";
+	            }
+	        });
+		}
 	
 	</script>
 </body>
