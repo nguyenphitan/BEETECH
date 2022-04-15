@@ -1,6 +1,7 @@
 package com.nguyenphitan.BeetechAPI.controller;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +16,14 @@ import org.springframework.web.servlet.ModelAndView;
 import com.nguyenphitan.BeetechAPI.entity.Cart;
 import com.nguyenphitan.BeetechAPI.entity.Product;
 import com.nguyenphitan.BeetechAPI.entity.User;
+import com.nguyenphitan.BeetechAPI.entity.discount.Discount;
 import com.nguyenphitan.BeetechAPI.entity.wallet.UserAccount;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.CartResponse;
 import com.nguyenphitan.BeetechAPI.repository.CartRepository;
 import com.nguyenphitan.BeetechAPI.repository.ProductRepository;
 import com.nguyenphitan.BeetechAPI.repository.UserRepository;
+import com.nguyenphitan.BeetechAPI.repository.discount.DiscountRepository;
 import com.nguyenphitan.BeetechAPI.repository.wallet.UserAccountRepository;
 
 @Controller
@@ -39,6 +42,9 @@ public class HomeController {
 	
 	@Autowired
 	UserAccountRepository userAccountRepository;
+	
+	@Autowired
+	DiscountRepository discountRepository;
 	
 	@GetMapping("/")
 	public ModelAndView loginPage() {
@@ -157,8 +163,55 @@ public class HomeController {
 		
 		}
 		
+		
+		// Tính tổng tiền trong giỏ hàng -> gợi ý discount (DiscountService)
+		Double totalCart = 0D;
+		for(CartResponse cart : listProducts) {
+			Double productPrice = cart.getProduct().getPrice();
+			Long quantity = cart.getQuantity();
+			Double totalPrice = quantity * productPrice;
+			totalCart += totalPrice;
+		}
+		
+		// Gợi ý discount:
+		// 1. Lấy ra discount hiện tại: (nếu có)
+		Double currentDiscount = 0D;
+		Double nextDiscount = 0D;
+		Double nextValue = 0D;
+		List<Discount> discounts = discountRepository.findAll();
+		discounts.sort(Comparator.comparing(Discount::getValue));
+		
+		if( totalCart < discounts.get(0).getValue() ) {
+			nextDiscount = discounts.get(0).getDiscount();
+			nextValue = discounts.get(0).getValue();
+		} else {
+			for ( int i = 1 ; i < discounts.size() ; i++ ) {
+				if( totalCart >= discounts.get(i-1).getValue() && totalCart < discounts.get(i).getValue() ) {
+					currentDiscount = discounts.get(i-1).getDiscount();
+					nextDiscount = discounts.get(i).getDiscount();
+					nextValue = discounts.get(i).getValue();
+					break;
+				}
+			}
+		}
+		
+		// 2. Tính toán lại tổng tiền sau khi trừ discount:
+		Double discountValue = (totalCart * currentDiscount)/100;
+		Double realCart = totalCart - discountValue; 
+		
+		// 3. Gợi ý mua thêm xx tiền để đạt discount tiếp theo:
+		Double valueToNextDiscount = nextValue - totalCart; 
+		
+		
 		session.setAttribute("listProducts", listProducts);
+		modelAndView.addObject("currentDiscount", currentDiscount);
+		modelAndView.addObject("nextDiscount", nextDiscount);
+		modelAndView.addObject("discountValue", discountValue);
+		modelAndView.addObject("valueToNextDiscount", valueToNextDiscount);
+		modelAndView.addObject("totalCart", totalCart);
+		modelAndView.addObject("realCart", realCart);
 		modelAndView.addObject("listProducts", listProducts);
+		
 		return modelAndView;
 	}
 	
@@ -188,6 +241,52 @@ public class HomeController {
 				listProducts.add(cartResponse);
 			}							
 		}
+		
+		// Tính tổng tiền trong giỏ hàng -> gợi ý discount (DiscountService)
+		Double totalCart = 0D;
+		for(CartResponse cart : listProducts) {
+			Double productPrice = cart.getProduct().getPrice();
+			Long quantity = cart.getQuantity();
+			Double totalPrice = quantity * productPrice;
+			totalCart += totalPrice;
+		}
+		
+		// Gợi ý discount:
+		// 1. Lấy ra discount hiện tại: (nếu có)
+		Double currentDiscount = 0D;
+		Double nextDiscount = 0D;
+		Double nextValue = 0D;
+		List<Discount> discounts = discountRepository.findAll();
+		discounts.sort(Comparator.comparing(Discount::getValue));
+		
+		if( totalCart < discounts.get(0).getValue() ) {
+			nextDiscount = discounts.get(0).getDiscount();
+			nextValue = discounts.get(0).getValue();
+		} else {
+			for ( int i = 1 ; i < discounts.size() ; i++ ) {
+				if( totalCart >= discounts.get(i-1).getValue() && totalCart < discounts.get(i).getValue() ) {
+					currentDiscount = discounts.get(i-1).getDiscount();
+					nextDiscount = discounts.get(i).getDiscount();
+					nextValue = discounts.get(i).getValue();
+					break;
+				}
+			}
+		}
+		
+		// 2. Tính toán lại tổng tiền sau khi trừ discount:
+		Double discountValue = (totalCart * currentDiscount)/100;
+		Double realCart = totalCart - discountValue;
+		
+		// 3. Gợi ý mua thêm xx tiền để đạt discount tiếp theo:
+		Double valueToNextDiscount = nextValue - totalCart; 
+		
+		modelAndView.addObject("currentDiscount", currentDiscount);
+		modelAndView.addObject("nextDiscount", nextDiscount);
+		modelAndView.addObject("discountValue", discountValue);
+		modelAndView.addObject("valueToNextDiscount", valueToNextDiscount);
+		modelAndView.addObject("totalCart", totalCart);
+		modelAndView.addObject("realCart", realCart);
+		
 		// Load thông tin khách hàng lên bill
 		modelAndView.addObject("userInfo", user);
 		

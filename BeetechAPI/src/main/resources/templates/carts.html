@@ -18,6 +18,10 @@
 		padding: 4px 16px;
 	}
 	
+	.t-voucher {
+		margin-left: 20px;
+	}
+	
 </style>
 </head>
 <body>
@@ -47,7 +51,7 @@
 					<td class="t-product-name" th:utext="${cartResponse.product.name}"></td>
 					<td th:utext="${cartResponse.product.price}"></td>
 					<td style="display: none;" class="t-quantity" th:text="${cartResponse.product.quantity}"></td>
-					<td class="t-quantity-selected" th:utext="${cartResponse.quantity}"></td>
+					<td class="t-quantity-selected" th:utext="${cartResponse.quantity}" style="text-align: right;"></td>
 					<td class="t-price" th:utext="${cartResponse.quantity * cartResponse.product.price}"></td>
 					<td> <a th:href="@{/public/details(id=${index.current.product.id})}">Xem chi tiết</a> </td>
 					<td style="text-align: center"> 
@@ -61,8 +65,37 @@
 			<tfoot>
 				<tr>
 					<td colspan="8"> 
-						<strong>Tổng tiền:</strong> 
-						<strong class="t-total-price">15000000</strong>
+						<strong>Tổng:</strong> 
+						<strong th:text="${totalCart}"></strong>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="8"> 
+						<div>
+							<span style="color: blue;">
+								<strong>Giảm giá:</strong> 
+								<strong th:text="${currentDiscount}"></strong>
+								<strong>%</strong>
+							</span>
+							<span style="margin-left: 30px; font-style: italic; color: red">
+								<span>( Mua thêm</span> 
+								<span class="t-need" th:text="${valueToNextDiscount}"></span>
+								<span>để được giảm</span>
+								<span th:text="${nextDiscount}"></span>
+								<span>% )</span>	
+							</span>													
+						</div>
+						<div style="color: black">
+							<strong>Trừ:</strong>
+							<strong>-</strong>
+							<strong th:text="${discountValue}"></strong>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="8"> 
+						<strong>Thành tiền:</strong> 
+						<strong th:text="${realCart}"></strong>
 					</td>
 				</tr>
 				<tr>
@@ -91,18 +124,6 @@
 		$(document).ready(function() {
 			// Token:
 			let token = $('.t-token').text();
-			
-			
-			// Tính tổng tiền:
-			let prices = $(".t-price");
-			let totalPrice = 0;
-			for (let price of prices) {
-				totalPrice += Number( $(price).text() );
-			}
-			$('.t-total-price').text(totalPrice);
-			// Tổng tiền hóa đơn:
-			$('.t-total-bill').text(totalPrice + ".0");
-			
 			
 			// Click xóa sản phẩm trong giỏ hàng:
 			$('.t-delete').click(function(e) {

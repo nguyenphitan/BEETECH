@@ -36,12 +36,28 @@
 					<td th:utext="${index.count}"></td>
 					<td th:utext="${cartResponse.product.name}"></td>
 					<td style="text-align: right;" th:utext="${cartResponse.product.price}"></td>
-					<td th:utext="${cartResponse.quantity}"></td>
+					<td style="text-align: right;" th:utext="${cartResponse.quantity}"></td>
 					<td class="t-price" style="text-align: right;" th:utext="${cartResponse.quantity * cartResponse.product.price}"></td>
+				</tr>
+				<tr style="font-style: italic;">
+					<td colspan="4">
+						<span>Giảm</span>
+						<span th:text="${currentDiscount}"></span>
+						<span>%</span>
+					</td>
+					<td style="text-align: right;">
+						<span>-</span>
+						<span th:text="${discountValue}"></span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="5">
+						<hr>
+					</td>
 				</tr>
 				<tr>
 					<td colspan="4">Tổng:</td>
-					<td style="text-align: right;" class="t-total-bill">0</td>
+					<td style="text-align: right;" th:text="${realCart}">0</td>
 				</tr>
 			</tbody>
 			
