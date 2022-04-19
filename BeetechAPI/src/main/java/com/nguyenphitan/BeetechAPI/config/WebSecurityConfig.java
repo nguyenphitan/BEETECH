@@ -57,7 +57,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 		"/js/**", 
                 		"/fonts/**", 
                 		"/images/**",
-                		"/static/**"
+                		"/static/**",
+                		"/assets/**"
                 		).permitAll();
     	http.authorizeRequests()
         		.antMatchers("/public/**", "/list-cart", "/cart", "/clone/**").permitAll();

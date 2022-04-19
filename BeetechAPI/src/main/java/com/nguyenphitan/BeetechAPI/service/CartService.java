@@ -15,14 +15,12 @@ import com.nguyenphitan.BeetechAPI.entity.Cart;
 import com.nguyenphitan.BeetechAPI.entity.Product;
 import com.nguyenphitan.BeetechAPI.entity.User;
 import com.nguyenphitan.BeetechAPI.entity.discount.Discount;
-import com.nguyenphitan.BeetechAPI.entity.wallet.UserAccount;
 import com.nguyenphitan.BeetechAPI.jwt.JwtTokenProvider;
 import com.nguyenphitan.BeetechAPI.payload.CartResponse;
 import com.nguyenphitan.BeetechAPI.repository.CartRepository;
 import com.nguyenphitan.BeetechAPI.repository.ProductRepository;
 import com.nguyenphitan.BeetechAPI.repository.UserRepository;
 import com.nguyenphitan.BeetechAPI.repository.discount.DiscountRepository;
-import com.nguyenphitan.BeetechAPI.repository.wallet.UserAccountRepository;
 
 @Service
 public class CartService {
@@ -41,9 +39,6 @@ public class CartService {
 	
 	@Autowired 
 	DiscountRepository discountRepository;
-	
-	@Autowired
-	UserAccountRepository userAccountRepository;
 	
 	
 	/*
@@ -95,15 +90,14 @@ public class CartService {
 			modelAndView.addObject("userInfo", user);
 
 		
-			// Kiểm tra xem đã liên kết ví điện tử hay chưa?
-			UserAccount userAccount = userAccountRepository.findByUserId(idUser);
-			session.setAttribute("userAccount", userAccount);
+			// Chuyển user id lên session:
+			session.setAttribute("idUser", idUser);
 		
 		}
 		
 		session.setAttribute("listProducts", listProducts);
 		modelAndView.addObject("listProducts", listProducts);
-		handlePayment(modelAndView, listProducts);
+		handlePayment(modelAndView, listProducts, request);
 		
 		return modelAndView;
 	}
@@ -113,7 +107,7 @@ public class CartService {
 	 * Xử lý nghiệp vụ liên quan đến số tiền phải thanh toán
 	 * Created by: NPTAN (18/04/2022)
 	 */
-	public void handlePayment(ModelAndView modelAndView, List<CartResponse> listProducts) {
+	public void handlePayment(ModelAndView modelAndView, List<CartResponse> listProducts, HttpServletRequest request) {
 		// Tính tổng tiền trong giỏ hàng -> gợi ý discount (DiscountService)
 		Double totalCart = 0D;
 		for(CartResponse cart : listProducts) {
@@ -147,7 +141,7 @@ public class CartService {
 		
 		// 2. Tính toán lại tổng tiền sau khi trừ discount:
 		Double discountValue = (totalCart * currentDiscount)/100;
-		Double realCart = totalCart - discountValue; 
+		Long realCart = Math.round(totalCart - discountValue);
 		
 		// 3. Gợi ý mua thêm xx tiền để đạt discount tiếp theo:
 		Double valueToNextDiscount = nextValue - totalCart; 
@@ -158,6 +152,10 @@ public class CartService {
 		modelAndView.addObject("valueToNextDiscount", valueToNextDiscount);
 		modelAndView.addObject("totalCart", totalCart);
 		modelAndView.addObject("realCart", realCart);
+		
+		// Đưa số tiền phải thanh toán lên session:
+		HttpSession session = request.getSession();
+		session.setAttribute("realCart", realCart);
 		
 	}
 	

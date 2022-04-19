@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>VNPAY RESPONSE</title>
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/assets/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom styles for this template -->
+    <link th:href="@{/assets/jumbotron-narrow.css}" rel="stylesheet"> 
+    <script th:src="@{/assets/jquery-1.11.3.min.js}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <!--Begin display -->
+     <div class="container">
+         <div class="header clearfix">
+             <h3 class="text-muted">VNPAY RESPONSE</h3>
+         </div>
+         <div class="table-responsive">
+             <div class="form-group">
+                 <label >Mã đơn hàng:</label>
+                 <label th:text="${data['txnRef']}"></label>
+             </div>    
+             <div class="form-group">
+                 <label >Số tiền:</label>
+                 <label th:text="${data['amount']}"></label>
+             </div>  
+             <div class="form-group">
+                 <label >Nội dung thanh toán:</label>
+                 <label th:text="${data['orderInfo']}"></label>
+             </div> 
+             <div class="form-group">
+                 <label >Mã phản hồi (vnp_ResponseCode):</label>
+                 <label class="responseCode" th:text="${data['responseCode']}"></label>
+             </div> 
+             <div class="form-group">
+                 <label >Mã GD Tại VNPAY:</label>
+                 <label th:text="${data['transactionNo']}"></label>
+             </div> 
+             <div class="form-group">
+                 <label >Mã Ngân hàng:</label>
+                 <label th:text="${data['bankCode']}"></label>
+             </div> 
+             <div class="form-group">
+                 <label >Thời gian thanh toán:</label>
+                 <label th:text="${data['payDate']}"></label>
+             </div> 
+            <!--  
+             <div th:each="param : ${}">
+             
+             </div>
+              -->
+             <div class="form-group">
+                 <label >Kết quả:</label>
+                 <label th:text="${data['responseCode'] == '00' ? 'Giao dịch thành công' : 'Giao dịch không thành công'}"></label>
+             </div> 
+             
+             <div>
+             	<button class="t-return-home">Về trang chủ</button>
+             </div>
+         </div>
+         <p>
+             &nbsp;
+         </p>
+         <footer class="footer">
+             <p>&copy; VNPAY 2015</p>
+         </footer>
+     </div>  
+     
+     <!-- Javascript -->
+     <script type="text/javascript">
+     $(document).ready(function() {
+    	// Nếu responseCode = '00' -> giao dịch thành công -> xóa sản phẩm khỏi giỏ hàng:
+    	let responseCode = $('.responseCode').text();
+    	if( responseCode === '00' ) {
+    		deleteProductInCart();
+    	}
+    	
+    	function deleteProductInCart() {
+			// Xóa danh sách sản phẩm đã thanh toán trong giỏ hàng
+			// Update số lượng sản phẩm còn lại trong database
+			$.ajax({
+	            type: "DELETE",
+	            url: `http://localhost:8080/pay`,
+	            success: function (response) {
+	            	alert("Đặt hàng thành công, đơn hàng sẽ được giao trong vài ngày tới.");
+	            }
+	        });
+		}
+    	
+    	// Click quay về trang chủ:
+ 	   	$('.t-return-home').click(function () {
+ 	   		window.location.href = "http://localhost:8080/public/list-products";
+ 		});
+    	
+    	
+    
+    	 
+     })
+     
+     </script>
+     
+     
+ </body>
+</html>

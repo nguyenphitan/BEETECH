@@ -109,7 +109,7 @@
 					<td colspan="8"> 
 						<strong>Thanh toán:</strong> 
 						<button class="t-pay">Mua Ngay</button>
-						<span class="senderId" style="display: none;" th:text="${session.userAccount == null ? '-1' : session.userAccount.userId}"></span>
+						<span class="senderId" style="display: none;" th:text="${session.idUser == null ? '-1' : session.idUser}"></span>
 					</td>
 				</tr>
 				
@@ -158,7 +158,7 @@
 			});
 			
 			
-			// Nhấn thanh toán:
+			// Nhấn mua ngay:
 			$('.t-pay').click(function () {
 				// Nếu chưa đăng nhập -> chuyển tới trang đăng nhập rồi mới được thanh toán:
 				if( token === 'null' ) {
@@ -197,21 +197,7 @@
 					window.location.href = "http://localhost:8080/bill/offline";
 				}
 				else if( payMethod === 't-pay-online' ) {
-					// Nếu thanh toán online
-					// Kiểm tra liên kết ví điện tử hay chưa:
-					let senderId = Number($('.senderId').text());
-					
-					if( senderId === -1 ) {
-						// Nếu chưa -> liên kết ví
-						window.location.href = "http://localhost:8080/wallets/register";
-					}
-					else {
-						// Nếu đã liên kết -> tạo đơn hàng -> thanh toán
-						console.log('Đã có tài khoản liên kết');
-						window.location.href = "http://localhost:8080/bill/online";
-						
-					}
-					
+					window.location.href = "http://localhost:8080/payment";
 				}
 				
 			});
