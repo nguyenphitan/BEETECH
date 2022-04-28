@@ -25,6 +25,9 @@ public class ProductService {
 	@Autowired
 	CartRepository cartRepository;
 	
+	/*
+	 * Lấy ra danh sách tất cả sản phẩm
+	 */
 	public ModelAndView getAllProduct(String page, HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView(page);
 		modelAndView.addObject("products", productRepository.findAll());

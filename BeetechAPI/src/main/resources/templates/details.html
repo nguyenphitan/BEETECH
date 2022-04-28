@@ -1,12 +1,68 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" >
 <head>
-<meta charset="UTF-8">
-<title>Chi tiết sản phẩm</title>
+	<meta charset="UTF-8">
+	<title>Chi tiết sản phẩm</title>
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js">
+	<link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/detail.css}">
 </head>
 <body>
 	<h1>Chi tiết sản phẩm</h1>
-	<table id="t-table" border="1px">
+	
+	
+	<div class="t-detail-area">
+		<div class="container d-flex justify-content-center">
+		    <figure class="card card-product-grid card-lg"> 
+		    	<a href="#" class="img-wrap" data-abc="true"> 
+		    		<img th:src="@{${product.get().photos}}"> 
+		    	</a>
+		        <figcaption class="info-wrap">
+		            <div class="row">
+		                <div class="col-md-9 col-xs-9"> 
+		                	<a href="#" class="title" data-abc="true" th:utext="${product.get().name}"></a> 
+		                	<span class="rated" th:text="'Số lượng còn lại: ' + ${product.get().quantity}"></span> 
+		                	<span style="display: none;" class="t-quantity-detail" th:text="${product.get().quantity}"></span>
+		                	<span style="display: none;" class="t-id-product" th:text="${product.get().id}"></span>
+		                </div>
+		                <div class="col-md-3 col-xs-3">
+		                    <div class="rating text-right"> 
+		                    	<i class="fa fa-star"></i> 
+		                    	<i class="fa fa-star"></i> 
+		                    	<i class="fa fa-star"></i> 
+		                    	<i class="fa fa-star"></i> 
+		                    	<span class="rated">Rated 4.0/5</span> 
+		                    </div>
+		                </div>
+		            </div>
+		        </figcaption>
+		        <div class="bottom-wrap-payment">
+		            <figcaption class="info-wrap">
+		                <div class="row">
+		                    <div class="col-md-9 col-xs-9"> 
+		                    	<a href="#" class="title" data-abc="true" th:utext="${product.get().price}"></a> 
+		                    	<span class="rated">VISA Platinum</span> 
+		                    </div>
+		                    <div class="col-md-3 col-xs-3">
+		                        <div class="rating text-right"> #### 8787 </div>
+		                    </div>
+		                </div>
+		            </figcaption>
+		        </div>
+		        <div class="bottom-wrap"> 
+		        	<span class="btn btn-primary float-right t-add-to-cart" data-abc="true"> Thêm giỏ hàng </span>
+		            <div class="price-wrap"> 
+		            	<a href="#" class="btn btn-warning float-left t-back-page" data-abc="true"> Hủy </a> 
+		            </div>
+		        </div>
+		    </figure>
+		</div>											
+	</div>
+	
+	
+	<!-- <table id="t-table" border="1px">
 		<tr>
 			<th>Hình ảnh</th>
 			<th>Tên sản phẩm</th>
@@ -21,6 +77,79 @@
 			<td th:utext="${product.get().price}"></td>
 			<td th:utext="${product.get().quantity}"></td>
 		</tr>
-	</table>
+	</table> -->
+	
+	
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('.t-back-page').click(function () {
+				window.location.href = document.referrer;
+			})
+			
+		})
+		
+		// Thêm vào giỏ hàng:
+		$('.t-add-to-cart').click(function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			// Kiểm tra số lượng đã chọn > số lượng còn lại hay không?
+			let quantitySelected = 1;
+			let quantity = Number( $(".t-quantity-detail").text() );
+			if( quantity < quantitySelected ) {
+				alert("Số lượng sản phẩm không đủ để thêm.");
+				return;
+			}
+			
+			let productId = Number($(".t-id-product").text());
+			let productRequest = {};
+			productRequest['idProduct'] = productId;
+			productRequest['quantitySelected'] = quantitySelected;
+			// Kiểm tra chuỗi token:
+			// Nếu chưa đăng nhập (chưa có token) -> thêm vào list sản phẩm -> đẩy lên session.
+			// Nếu đã đăng nhập -> thêm danh sách sản phẩm vào bảng cart database.
+			let token = $(e.target).next().text();
+			
+			if( token === "null" ) {
+				// Gọi đến API clone, post dữ liệu vào session:
+				$.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/clone/cart",
+                    // async: false,
+                    data: JSON.stringify(productRequest),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                    	alert("Thêm thành công.");
+                    	window.location.href = 'http://localhost:8080/list-cart';
+                    },
+                    error: function(reject) {
+                        alert("Không thành công.");
+                    }
+                });	
+				
+			}
+			else {
+				// Gọi đến API, post dữ liệu:
+				$.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/cart",
+                    // async: false,
+                    data: JSON.stringify(productRequest),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                    	alert("Thêm thành công.");
+                    	window.location.href = 'http://localhost:8080/list-cart';
+                    },
+                    error: function(reject) {
+                        alert("Không thành công.");
+                    }
+                });	
+			}	
+		});
+	
+	
+	</script>
 </body>
 </html>

@@ -67,7 +67,7 @@ public class SynchronizedController {
 			}
 			cartRepository.saveAll(cartsSession);
 		}
-		return new RedirectView("/public/list-products");
+		return new RedirectView("/list-products");
 	}
 	
 }

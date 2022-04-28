@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.nguyenphitan.BeetechAPI.entity.Product;
+import com.nguyenphitan.BeetechAPI.repository.CartRepository;
 import com.nguyenphitan.BeetechAPI.repository.ProductRepository;
 
 /**
@@ -36,10 +37,13 @@ public class AdminProductController {
 	@Autowired
 	ProductRepository productRepository;
 	
+	@Autowired
+	CartRepository cartRepository;
+	
 	@PostMapping()
 	public RedirectView addImage(
 			@RequestParam("name") String name, 
-			@RequestParam("price") Double price, 
+			@RequestParam("price") Long price, 
 			@RequestParam("quantity") Long quantity,
 			@RequestParam("image") MultipartFile multipartFile) throws IOException  
 	{
@@ -61,7 +65,7 @@ public class AdminProductController {
         product.setPhotos(imagePath.resolve(multipartFile.getOriginalFilename()).toString());
         productRepository.save(product);
         
-        return new RedirectView("/public/list-products");
+        return new RedirectView("/list-products");
 	}
 
 	@PutMapping("/{id}")
@@ -71,6 +75,10 @@ public class AdminProductController {
 
 	@DeleteMapping("/{id}")
 	public void deleteProduct(@PathVariable("id") Long id) {
+		// Xóa sản phẩm trong danh sách product:
 		productRepository.deleteById(id);
+		
+		// Xóa sản phẩm trong giỏ hàng:
+		cartRepository.deleteByIdProduct(id);
 	}
 }

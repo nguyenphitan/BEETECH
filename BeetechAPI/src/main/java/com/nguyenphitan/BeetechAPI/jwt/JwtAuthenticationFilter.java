@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				Long userId = tokenProvider.getUserIdFromJWT(jwt);
 				// Lấy thông tin người dùng từ id
 				UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-				if(userDetails != null) {
+				if(userDetails != null) { 
 					// Nếu người dùng hợp lệ, set thông tin cho Security Context
 					UsernamePasswordAuthenticationToken 
 							authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

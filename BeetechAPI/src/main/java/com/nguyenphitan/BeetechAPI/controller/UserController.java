@@ -43,14 +43,14 @@ public class UserController {
 				() -> new UsernameNotFoundException("User id invalid.")
 		);
 	}
-
-	@PostMapping("/users")
+	
+	@PostMapping("/users")	// đăng ký tài khoản
 	public User createUser(@Valid @RequestBody User user) {
-		User user2 = new User();
-		user2.setUsername(user.getUsername());
-		user2.setPassword(passwordEncoder.encode(user.getPassword()));
-		user2.setRole(user.getRole());
-		return userRepository.save(user2);
+		User user_raw = new User();
+		user_raw.setUsername(user.getUsername());
+		user_raw.setPassword(passwordEncoder.encode(user.getPassword()));
+		user_raw.setRole(user.getRole());
+		return userRepository.save(user_raw);
 	}
 
 	@PutMapping("/users/{id}")

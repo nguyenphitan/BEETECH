@@ -20,9 +20,16 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	public Product(String name, Long price, Long quantity, String photos) {
+		this.name = name;
+		this.price = price;
+		this.quantity = quantity;
+		this.photos = photos;
+	}
+	
 	private String name;
 	
-	private Double price;
+	private Long price;
 	
 	private Long quantity;
 	

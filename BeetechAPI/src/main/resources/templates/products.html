@@ -3,51 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <title>Danh sách sản phẩm</title>
+<!-- <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"> -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/card.css}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<style type="text/css">
-	#t-table tr {
-		height: 50px;
-	}
-	
-	#t-table tr td,
-	#t-table tr th {
-		padding: 0 8px;
-	}
-	
-	input[type="number"] {
-		outline: none;
-		border: none;
-		width: 30px;
-		padding: 4px;
-	}
-	
-</style>
 </head>
 <body>
-	<h1>Danh sách sản phẩm</h1>
-	<h3> <a href="/list-cart">Giỏ hàng: <span th:utext="${totalQuantity}"></span> </a> </h3>
-	<table id="t-table" border="1px">
+	<h1 style="padding-top: 20px;" th:text="${ (session.role == 'ADMIN') ? 'Quản lý sản phẩm' : 'Danh sách sản phẩm' }" >Danh sách sản phẩm</h1>
+	
+	<h3 class="t-cart-area"> <a href="/list-cart">Giỏ hàng: <span th:utext="${totalQuantity}"></span> </a> </h3>
+	<h3 class="t-logout"> <a href="/api/v1/auth/logout">Đăng xuất</a> </h3>
+	
+	<!--  -->
+	<!-- <div class="t-card-area">
+		<div class='container-fluid'>
+		    <div class="card mx-auto col-md-3 col-10 mt-5" th:each="product, index: ${products}"> 
+		    	<img class='mx-auto img-thumbnail' th:src="@{${product.photos}}" width="auto" height="auto" />
+		        <div class="card-body text-center mx-auto">
+		            <div class='cvp'>
+		                <h5 class="card-title font-weight-bold" th:utext="${product.name}"></h5>
+		                <p class="card-text" th:utext="${product.price}"></p> 
+		                <a th:href="@{/details(id=${index.current.id})}" class="btn details px-auto">view details</a><br /> 
+		                <div class="btn cart px-auto">
+		                	<span style="display: none;" class="t-product-id" th:text="${index.current.id}"></span>
+							<span class="t-add-to-cart">ADD TO CARD</span>
+							<span style="display: none" class="t-token" th:text="${session.token == null ? 'null' : session.token}"></span>
+							<form style="display: none;" class="t-add-to-cart-clone" action="/"></form>							
+		                </div>
+		                <span class="t-quantity" th:text="${product.quantity}" style="display: none;"></span>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+	 -->
+	
+	<!--  -->
+	
+	<div th:if="${(session.role == 'ADMIN')}" class="admin-manager" style="margin: 50px 0 20px;">
+		<a href="/admin" class="addmin-add-product reset-a t-button t-right-20">
+			Thêm một sản phẩm
+		</a>
+		
+		<a href="/add-list" class="addmin-add-list reset-a t-button">
+			Thêm nhiều sản phẩm
+		</a>
+	</div>
+	
+	<table id="t-table">
 		<tr>
 			<th>STT</th>
-			<th>Tên sản phẩm</th>
+			<th class="t-w-185">Tên sản phẩm</th>
 			<th>Hình ảnh</th>
-			<th>Đơn giá</th>
-			<th>Số lượng còn lại</th>
+			<th class="t-w-185">Đơn giá</th>
+			<th class="t-w-185">Số lượng còn lại</th>
 			<th>Xem chi tiết</th>
 			<th>Chọn số lượng</th>
 			<th>Thêm vào giỏ hàng</th>
+			<th th:if="${(session.role == 'ADMIN')}" class="t-w-205">
+				<!-- Hiển thị nút xóa sản phẩm với role là ADMIN -->
+				Cập nhật sản phẩm
+			</th>
+			<th th:if="${(session.role == 'ADMIN')}">
+				<!-- Hiển thị nút xóa sản phẩm với role là ADMIN -->
+				Xóa khỏi danh sách
+			</th>
 		</tr>
 		<tr th:each="product, index: ${products}">
 			<td th:utext="${index.count}"></td>
-			<td th:utext="${product.name}"></td>
-			<td>
+			<td class="t-update-area">
+				<span th:utext="${product.name}"></span>
+				<input class="t-hide input-name-update" type="text" th:value="${product.name}">
+			</td>
+			<td class="t-img-update">
+				<span class="t-hide" th:text="${product.photos}"></span>
 				<img alt="Ảnh sản phẩm" th:src="@{${product.photos}}" width="90px" height="113.3px">
 			</td>
-			<td th:utext="${product.price}"></td>
-			<td class="t-quantity" th:utext="${product.quantity}"></td>
-			<td> <a th:href="@{/public/details(id=${index.current.id})}">Xem chi tiết</a> </td>
-			<td class="t-quantity-selected"> <input class="t-quantity-input" type="number" name="quantitySelected" value="1"/> </td>
-			<td class="t-add-to-cart" style="text-align: center"> 
+			<td class="t-update-area t-text-right">
+				<span th:utext="${product.price}"></span>
+				<input class="t-hide input-price-update t-text-right" type="text" th:value="${product.price}">
+			</td>
+			<td class="t-update-area t-quantity-current t-text-right" >
+				<span class="t-quantity" th:utext="${product.quantity}"></span>
+				<input class="t-hide input-quantity-update t-text-right" type="text" th:value="${product.quantity}">
+			</td>
+			<td> <a class="reset-a" th:href="@{/details(id=${index.current.id})}">Xem chi tiết</a> </td>
+			<td class="t-quantity-selected t-text-right"> 
+				<input class="t-quantity-input" type="number" name="quantitySelected" value="1" min="1" style="border: none; min-width: 50px;"/> 
+			</td>
+			<td class="t-add-to-cart t-text-center"> 
 				<!-- Cách 1 -->
 				<!-- <form action="/cart" method="POST">
 					<input style="display: none" type="text" name="id" th:value="${index.current.id}">
@@ -56,11 +101,22 @@
 				
 				<!-- Cách 2 -->
 				<span style="display: none;" class="t-product-id" th:text="${index.current.id}"></span>
-				<button class="t-add-to-cart">Thêm</button>
+				<button class="t-add-to-cart t-button">Thêm giỏ hàng</button>
 				<span style="display: none" class="t-token" th:text="${session.token == null ? 'null' : session.token}"></span>
 				
 				<form style="display: none;" class="t-add-to-cart-clone" action="/"></form>
 				
+			</td>
+			<td th:if="${(session.role == 'ADMIN')}" style="text-align: center;">
+				<!-- Hiển thị nút sửa sản phẩm với role là ADMIN -->
+				<button class="t-hide admin-save-product t-button">Lưu</button>
+				<button class="admin-update-product t-button">Cập nhật</button>
+				<button class="t-hide admin-cancel t-button">Hủy</button>
+			</td>
+			<td class="admin-id-product" style="display: none;" th:text="${index.current.id}"></td>
+			<td th:if="${(session.role == 'ADMIN')}" style="text-align: center;">
+				<!-- Hiển thị nút xóa sản phẩm với role là ADMIN -->
+				<button class="admin-delete-product t-button">Xóa</button>
 			</td>
 		</tr>
 	</table>
@@ -74,7 +130,7 @@
 				
 				// Kiểm tra số lượng đã chọn > số lượng còn lại hay không?
 				let quantitySelected = $(e.target).parents(".t-add-to-cart").siblings(".t-quantity-selected").children(".t-quantity-input").val();
-				let quantity = Number( $(e.target).parents(".t-add-to-cart").siblings(".t-quantity").text() );
+				let quantity = Number( $(e.target).parent().siblings(".t-quantity-current").find('.t-quantity').text() );
 				if( quantity < quantitySelected ) {
 					alert("Số lượng sản phẩm không đủ để thêm.");
 					return;
@@ -128,6 +184,80 @@
 	                });	
 				}	
 			});
+		
+			// Admin xóa loại sản phẩm khỏi danh sách các sản phẩm:
+			$('.admin-delete-product').click(function (e) {
+				// Lấy ra id của sản phẩm:
+				let productId = Number($(e.target).parent().siblings('.admin-id-product').text());
+			
+				$.ajax({
+		            type: "DELETE",
+		            url: `http://localhost:8080/admin/api/v1/products/${productId}`,
+		            success: function (response) {
+		                alert("Xóa thành công.");
+		                window.location.reload();
+		            }
+		        });
+					
+			});
+		
+			// Admin cập nhật sản phẩm: (tên, giá, số lượng)
+			$('.admin-update-product').click(function (e) {
+				$(e.target).prev().removeClass('t-hide');
+				$(e.target).next().removeClass('t-hide');
+				$(e.target).addClass('t-hide');
+				
+				// Build tên, giá, số lượng vào input để thực hiện nhập giá trị update:
+				let inputUpdates = $(e.target).parent().siblings('.t-update-area').find('input.t-hide');
+				for(input of inputUpdates) {
+					$(input).removeClass('t-hide');
+					$(input).prev().addClass('t-hide');
+				}
+				
+			})
+			
+			// Admin nhấn hủy cập nhật:
+			$('.admin-cancel').click(function () {
+				window.location.reload();
+			})
+			
+			// Admin nhấn lưu thông tin cập nhật:
+			$('.admin-save-product').click(function (e) {
+				// Lấy ra id của sản phẩm:
+				let productId = Number($(e.target).parent().siblings('.admin-id-product').text());
+				console.log(productId);
+				let photos = $(e.target).parent().siblings('.t-img-update').find('span.t-hide').text();
+				console.log(photos);
+				
+				// Lấy các giá trị update build thành product:
+				let inputUpdates = $(e.target).parent().siblings('.t-update-area').find('input');
+				let product = {};
+				product['id'] = productId;
+				product['name'] = $(inputUpdates[0]).val();
+				product['price'] = Number($(inputUpdates[1]).val());
+				product['quantity'] = Number($(inputUpdates[2]).val());
+				product['photos'] = photos;
+				
+				// Gọi API sửa product:
+				$.ajax({
+                    type: "PUT",
+                    url: `http://localhost:8080/admin/api/v1/products/${productId}`,
+                    // async: false,
+                    data: JSON.stringify(product),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        alert('Cập nhật thành công.');
+                        window.location.reload();
+                    },
+                    error: function(reject) {
+                        alert('Không thành công.');
+                        console.log(reject);
+                    }
+                });
+			
+			})
+			
 			
 			
 		

@@ -5,8 +5,18 @@
 <title>Giỏ hàng</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style type="text/css">
+	#t-table {
+		border: 1px solid #878787;
+		border-collapse: collapse;
+	}
+	
+	#t-table th {
+		border: 1px solid #878787;
+	} 
+
 	#t-table td {
 		padding: 0 16px;
+		border: 1px solid #878787;
 	}
 	
 	#t-bill {
@@ -22,13 +32,46 @@
 		margin-left: 20px;
 	}
 	
+	.t-buy-continue {
+		color: #333;
+		padding: 8px;
+		margin: 16px 0;
+		border: 1px solid #878787; 
+		display: inline-block;
+		border-radius: 4px;
+	}
+	
+	.reset-a {
+		text-decoration: none;
+		color: #333;
+	}
+	
+	.t-button {
+		border: 1px solid #bbbbbb; 
+		padding: 8px; 
+		border-radius: 4px; 
+		background-color: #f1f1f1;
+		cursor: pointer;
+		min-width: 100px;
+	}
+	
+	.t-button:hover {
+		background-color: #ccc;
+	}
+	
+	.t-text-center {
+		text-align: center;
+	}
+	
 </style>
 </head>
 <body>
 	<div id="t-cart">
 		<h1>Các sản phẩm trong giỏ hàng</h1>
 		<span style="display: none" class="t-token" th:text="${session.token == null ? 'null' : session.token}"></span>
-		<table id="t-table" border="1px">
+		
+		<a href="/list-products" class="t-buy-continue reset-a t-button">Tiếp tục mua hàng</a>
+		<table id="t-table">
 			<thead>
 				<tr>
 					<th>STT</th>
@@ -53,10 +96,10 @@
 					<td style="display: none;" class="t-quantity" th:text="${cartResponse.product.quantity}"></td>
 					<td class="t-quantity-selected" th:utext="${cartResponse.quantity}" style="text-align: right;"></td>
 					<td class="t-price" th:utext="${cartResponse.quantity * cartResponse.product.price}"></td>
-					<td> <a th:href="@{/public/details(id=${index.current.product.id})}">Xem chi tiết</a> </td>
+					<td> <a class="reset-a" th:href="@{/details(id=${index.current.product.id})}">Xem chi tiết</a> </td>
 					<td style="text-align: center"> 
 						<span class="cart-id" style="display: none" th:text="${cartResponse.id}"></span>
-						<button class="t-delete">Xóa</button> 
+						<button class="t-delete t-button">Xóa</button> 
 						<span class="product-id" style="display: none" th:text="${index.current.product.id}"></span>
 					</td>
 				</tr>
@@ -108,7 +151,7 @@
 				<tr>
 					<td colspan="8"> 
 						<strong>Thanh toán:</strong> 
-						<button class="t-pay">Mua Ngay</button>
+						<button class="t-pay t-button" style="margin: 4px 4px 4px 50px; width: 500px;">Mua Ngay</button>
 						<span class="senderId" style="display: none;" th:text="${session.idUser == null ? '-1' : session.idUser}"></span>
 					</td>
 				</tr>

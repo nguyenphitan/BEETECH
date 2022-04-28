@@ -111,9 +111,9 @@ public class CartService {
 		// Tính tổng tiền trong giỏ hàng -> gợi ý discount (DiscountService)
 		Double totalCart = 0D;
 		for(CartResponse cart : listProducts) {
-			Double productPrice = cart.getProduct().getPrice();
+			Long productPrice = cart.getProduct().getPrice();
 			Long quantity = cart.getQuantity();
-			Double totalPrice = quantity * productPrice;
+			Long totalPrice = quantity * productPrice;
 			totalCart += totalPrice;
 		}
 		

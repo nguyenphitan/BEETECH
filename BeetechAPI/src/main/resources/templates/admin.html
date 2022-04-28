@@ -1,16 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Admin</title>
+	<meta charset="UTF-8">
+	<title>Admin</title>
+	<style type="text/css">
+		.t-w-150 {
+			display: inline-block;
+			width: 150px;
+		}
+		
+		.t-none-border {
+			border: none !important;
+		}
+		
+		.t-form-area {
+			width: 60%;
+			margin: 150px auto 0;
+		}
+		
+		.t-form-area .t-w-input {
+			width: calc(100% - 200px);
+		}
+		
+		.t-form-area .t-input {
+			height: 40px;
+			outline: none;
+			min-width: 150px;
+			border-radius: 4px; 
+			border: 1px solid #aaa;
+		}
+		
+		.t-form-area .t-button:hover {
+			background-color: #ccc;
+		}
+		
+		.t-form-area form span {
+			font-size: 18px;
+			font-weight: bold;
+		}
+	
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-	<form action="/admin/api/v1/products" enctype = "Multipart/form-data"  method="POST">
-		Tên sản phẩm: <input type="text" placeholder="Nhập tên sản phẩm" name="name" required/> <br>
-		Giá sản phẩm: <input type="number" placeholder="Nhập giá " name="price" required/> <br>
-		Số lượng: <input type="number" placeholder="Nhập số lượng" name="quantity" required/> <br>
-		Hình ảnh: <input type="file" name="image"/> <br>
-		<input type="submit" value="Thêm" />
-	</form>
+	<div class="t-form-area">
+		<form action="/admin/api/v1/products" enctype = "Multipart/form-data"  method="POST">
+			<span class="t-w-150">Tên sản phẩm:</span> <input class="t-input t-w-input" type="text" placeholder="Nhập tên sản phẩm" name="name" required/> <br> <br>
+			<span class="t-w-150">Giá sản phẩm:</span> <input class="t-input t-w-input" type="number" placeholder="Nhập giá " name="price" required/> <br> <br>
+			<span class="t-w-150">Số lượng:</span> <input class="t-input t-w-input" type="number" placeholder="Nhập số lượng" name="quantity" required/> <br> <br>
+			<span class="t-w-150">Hình ảnh:</span> <input class="t-input t-none-border" type="file" name="image" required/> <br> <br>
+			<input class="t-input t-button" style="cursor: pointer; margin: 0 auto;" type="submit" value="Thêm" />
+			<button class="t-return t-input t-button" style="cursor: pointer; margin-left: 16px;">Hủy</button>
+		</form>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function () {
+			// Click hủy
+			$('.t-return').click(function () {
+				window.location.href = document.referrer;
+			})
+		})
+	
+	</script>
 </body>
 </html>

@@ -54,10 +54,16 @@ public class HomeController {
 		return modelAndView;
 	}
 	
+	@GetMapping("/add-list")
+	public ModelAndView addListProduct() {
+		ModelAndView modelAndView = new ModelAndView("add_list_product");
+		return modelAndView;
+	}
+	
 	/*
 	 * Danh sách sản phẩm
 	 */
-	@GetMapping("/public/list-products")
+	@GetMapping("/list-products")
 	public ModelAndView productPage(HttpServletRequest request) {
 		ModelAndView modelAndView = productService.getAllProduct("products", request);
 		return modelAndView;
@@ -66,7 +72,7 @@ public class HomeController {
 	/*
 	 * Chi tiết sản phẩm
 	 */
-	@GetMapping("/public/details")
+	@GetMapping("/details")
 	public ModelAndView detailPage(@RequestParam("id") Long id) {
 		ModelAndView modelAndView = new ModelAndView("details");
 		modelAndView.addObject("product", (Object) productRepository.findById(id));

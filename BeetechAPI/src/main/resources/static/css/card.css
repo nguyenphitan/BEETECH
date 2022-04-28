@@ -1,0 +1,149 @@
+body {
+	/*background: #E0E0E0*/
+	
+}
+
+.details {
+	border: 1.5px solid grey;
+	color: #212121;
+	width: 100%;
+	height: auto;
+	box-shadow: 0px 0px 10px #212121;
+}
+
+.cart {
+	background-color: #212121;
+	color: white;
+	margin-top: 10px;
+	font-size: 12px;
+	font-weight: 900;
+	width: 100%;
+	height: 39px;
+	padding-top: 9px;
+	box-shadow: 0px 5px 10px #212121;
+}
+
+/* Cart */
+.t-cart-area {
+	position: absolute;
+	top: 20px;
+	right: 16px;
+	z-index: 1;
+}
+
+.t-text-right {
+	text-align: right !important;	
+}
+
+.t-logout {
+	position: absolute;
+	top: 60px;
+	right: 16px;
+	z-index: 1;
+}
+
+/* Container */
+.t-card-area {
+	margin-top: 50px;
+}
+
+.container-fluid {
+	width: 90%;
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+}
+
+/*  */
+.card {
+	width: fit-content;
+	margin: 16px !important;
+}
+
+.card-body {
+	width: fit-content
+}
+
+.btn {
+	border-radius: 0
+}
+
+.img-thumbnail {
+	border: none
+}
+
+.card {
+	box-shadow: 0 20px 40px rgba(0, 0, 0, .2);
+	border-radius: 5px;
+	padding-bottom: 10px
+}
+
+#t-table tr {
+	height: 50px;
+}
+
+#t-table tr td, #t-table tr th {
+	padding: 0 8px;
+}
+
+#t-table, #t-table th, #t-table td {
+	border: 1px solid #878787;
+	border-collapse: collapse;
+}
+
+#t-table tr td input {
+	outline: none;
+	border: 1px solid #bbb;
+	height: 34px;
+	border-radius: 4px;
+}
+
+input[type="number"] {
+	outline: none;
+	border: none;
+	width: 30px;
+	padding: 4px;
+}
+
+.reset-a {
+	text-decoration: none;
+	color: #333;
+}
+
+.t-hide {
+	display: none;
+}
+
+.t-text-center {
+	text-align: center !important;
+}
+
+.t-right-20 {
+	margin-right: 20px;
+}
+
+.t-w-185 {
+	width: 169.4px;
+}
+
+.t-w-205 {
+	width: 205px;
+}
+
+a {
+	text-decoration: none;
+}
+
+.t-button {
+	border: 1px solid #bbbbbb;
+	padding: 8px;
+	border-radius: 4px;
+	background-color: #f1f1f1;
+	cursor: pointer;
+	min-width: 100px;
+}
+
+.t-button:hover {
+	background-color: #ccc;
+}

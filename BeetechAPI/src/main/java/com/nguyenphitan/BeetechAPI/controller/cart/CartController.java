@@ -65,7 +65,7 @@ public class CartController {
 		// Update số lượng sản phẩm trong giỏ hàng:
 		// Tìm kiếm sản phẩm có id = id sản phẩm được thêm:
 		// Nếu có -> update số lượng sản phẩm trong giỏ hàng (thêm) ứng với user id.
-		// Nếu không có -> thêm mới
+		// Nếu không có -> thêm mới 
 		List<Cart> listCarts = cartRepository.findByIdProduct(idProduct);
 		if( !listCarts.isEmpty() ) {
 			for(Cart cart : listCarts) {
