@@ -27,7 +27,7 @@ public class IOFile {
 
 	public static List<Product> csvProducts(InputStream is) {
 		try (
-				BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+				BufferedReader fileReader = new BufferedReader(new InputStreamReader(is, "SHIFT-JIS"));
 				CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
 			) {
 			List<Product> products = new ArrayList<Product>();
