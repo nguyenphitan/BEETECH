@@ -1,4 +1,4 @@
-package com.nguyenphitan.BeetechLogin.payload;
+package com.nguyenphitan.BeetechLogin.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

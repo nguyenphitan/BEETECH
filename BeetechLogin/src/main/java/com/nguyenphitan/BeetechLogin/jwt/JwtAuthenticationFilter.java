@@ -15,12 +15,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.nguyenphitan.BeetechLogin.user.UserService;
+import com.nguyenphitan.BeetechLogin.domain.repository.AccessTokenRepository;
+import com.nguyenphitan.BeetechLogin.domain.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Kiểm tra chuỗi JWT nhận từ request có hợp lệ hay không?
+ * TokenFilter.
  * @author NPTAN
  * 
  */
@@ -32,20 +33,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private UserService customUserDetailsService;
 	
+	@Autowired
+	private AccessTokenRepository accessTokenRepository;
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			// Lấy jwt từ request
 			String jwt = getJwtFromRequest(request);
 			
+			accessTokenRepository.findByToken(jwt)
+			.orElseThrow(() -> new Exception("Not found access token."));
+			
 			if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-				// Lấy id user từ chuỗi jwt
 				Long userId = tokenProvider.getUserIdFromJWT(jwt);
-				// Lấy thông tin người dùng từ id
 				UserDetails userDetails = customUserDetailsService.loadUserById(userId);
 				if(userDetails != null) {
-					// Nếu người dùng hợp lệ, set thông tin cho Security Context
 					UsernamePasswordAuthenticationToken 
 							authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -63,11 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 	
 	/*
-	 * Lấy ra token từ request gửi lên
+	 * Get token from request
 	 */
 	private String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
-		// Kiểm tra xem Header Authorization có chứa thông tin jwt hay không?
 		if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7);
 		}

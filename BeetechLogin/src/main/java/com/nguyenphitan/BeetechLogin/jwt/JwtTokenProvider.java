@@ -2,9 +2,10 @@ package com.nguyenphitan.BeetechLogin.jwt;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.nguyenphitan.BeetechLogin.user.CustomUserDetails;
+import com.nguyenphitan.BeetechLogin.custom.CustomUserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -18,44 +19,60 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenProvider {
 
-	// Đoạn mã JWT_SECRET
-	private final String JWT_SECRET = "nguyenphitan";
+	@Value("${jwt.app.jwtSecret}")
+	private String jwtSecret;
 
-	// Thời gian hiệu lực của mỗi chuỗi jwt
-	private final long JWT_EXPIRATION = 604800000L;
+	@Value("${jwt.app.jwtAccessExpiration}")
+	private long jwtExpiration;
 
-	// Tạo ra jwt từ thông tin user
+	/**
+	 * Generate token from user id.
+	 * 
+	 * @param userDetails
+	 * @return
+	 */
 	public String generateToken(CustomUserDetails userDetails) {
 		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
-		// Tạo chuỗi jwt từ id của user
+		Date expiryDate = new Date(now.getTime() + jwtExpiration);
+		
 		return Jwts.builder()
 					.setSubject(Long.toString(userDetails.getUser().getId()))
 					.setIssuedAt(now)
 					.setExpiration(expiryDate)
-					.signWith(SignatureAlgorithm.HS512, JWT_SECRET)
+					.signWith(SignatureAlgorithm.HS512, jwtSecret)
 					.compact();
 	}
 	
-	// Lấy thông tin user từ jwt
+	/**
+	 * Get user id from token.
+	 * 
+	 * @param token
+	 * @return
+	 */
 	public Long getUserIdFromJWT(String token) {
 		Claims claims = Jwts.parser()
-							.setSigningKey(JWT_SECRET)
+							.setSigningKey(jwtSecret)
 							.parseClaimsJws(token)
 							.getBody();
 		
 		return Long.parseLong(claims.getSubject());
 	}
 	
-	// Validate token
+	/**
+	 * Validate token.
+	 * 
+	 * @param authToken
+	 * @return
+	 */
 	public boolean validateToken(String authToken) {
 		try {
-			Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
 		} catch (IllegalArgumentException e) {
 			log.error("JWT claims string is empty.");
 		} catch (ExpiredJwtException e) {
 			log.error("Expired JWT token.");
+			throw new ExpiredJwtException(null, null, "Expired JWT token");
 		} catch (MalformedJwtException e) {
 			log.error("Invalid JWT token.");
 		} catch (UnsupportedJwtException e) {

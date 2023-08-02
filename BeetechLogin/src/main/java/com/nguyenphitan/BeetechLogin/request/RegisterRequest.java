@@ -1,11 +1,11 @@
-package com.nguyenphitan.BeetechLogin.payload;
+package com.nguyenphitan.BeetechLogin.request;
 
 import javax.validation.constraints.NotBlank;
 
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class RegisterRequest {
 	// Đánh dấu username không được trống
 	@NotBlank
 	private String username;
