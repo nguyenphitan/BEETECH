@@ -51,9 +51,10 @@ public class AuthController {
 	 * 
 	 * @param request
 	 * @return
+	 * @throws Exception 
 	 */
 	@PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) throws Exception {
         String requestRefreshToken = request.getRefreshToken();
         return ResponseEntity.ok(authService.refreshToken(requestRefreshToken));
     }
@@ -67,8 +68,7 @@ public class AuthController {
 	@PostMapping("/change_password")
 	public ResponseEntity<?> changePassword(
 			@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-		
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(authService.changePassword(changePasswordRequest));
 	}
 
 	

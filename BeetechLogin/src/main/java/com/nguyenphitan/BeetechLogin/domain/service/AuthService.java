@@ -30,8 +30,9 @@ public interface AuthService {
 	 * 
 	 * @param refreshToken
 	 * @return
+	 * @throws Exception 
 	 */
-	TokenRefreshResponse refreshToken(String refreshToken);
+	TokenRefreshResponse refreshToken(String refreshToken) throws Exception;
 	
 	/**
 	 * Change password.

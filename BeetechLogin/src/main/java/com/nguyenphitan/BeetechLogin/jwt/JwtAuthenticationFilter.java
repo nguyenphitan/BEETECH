@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.nguyenphitan.BeetechLogin.domain.repository.AccessTokenRepository;
 import com.nguyenphitan.BeetechLogin.domain.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +33,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private UserService customUserDetailsService;
 	
+	@Autowired
+	private AccessTokenRepository accessTokenRepository;
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
 			String jwt = getJwtFromRequest(request);
+			
+			accessTokenRepository.findByToken(jwt)
+			.orElseThrow(() -> new Exception("Not found access token."));
 			
 			if(StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 				Long userId = tokenProvider.getUserIdFromJWT(jwt);

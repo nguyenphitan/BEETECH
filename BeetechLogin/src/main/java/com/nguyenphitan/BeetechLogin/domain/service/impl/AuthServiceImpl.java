@@ -1,8 +1,5 @@
 package com.nguyenphitan.BeetechLogin.domain.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -103,13 +100,12 @@ public class AuthServiceImpl implements AuthService {
 	 * 
 	 * @param token
 	 * @return
+	 * @throws Exception 
 	 */
 	@Override
-	public TokenRefreshResponse refreshToken(String refreshToken) {
-		RefreshToken tokenRefresh = refreshTokenRepository.findByToken(refreshToken).get();
-		if(!tokenRefresh.getIsActive()) {
-			throw new TokenRefreshException(refreshToken, "Refresh token is not active");
-		}
+	public TokenRefreshResponse refreshToken(String refreshToken) throws Exception {
+		refreshTokenRepository.findByToken(refreshToken)
+				.orElseThrow(() -> new Exception("Not found refresh token."));
 		
 		return refreshTokenService.findByToken(refreshToken)
                 .map(refreshTokenService::verifyExpiration)
@@ -117,6 +113,8 @@ public class AuthServiceImpl implements AuthService {
                 .map(userId -> {
                 	User user = userRepository.findById(userId).get();
                     String accessToken = tokenProvider.generateToken(new CustomUserDetails(user));
+                    AccessToken newAccessToken = new AccessToken(userId, accessToken);
+                    accessTokenRepository.save(newAccessToken);
                     return new TokenRefreshResponse(accessToken, refreshToken);
                 })
                 .orElseThrow(() -> new TokenRefreshException(refreshToken,
@@ -136,39 +134,13 @@ public class AuthServiceImpl implements AuthService {
 			user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
 			userRepository.save(user);
 			
-			updateAccessToken(user);
-			updateRefreshToken(user);
+			accessTokenRepository.deleteByUserId(user.getId());
+			refreshTokenRepository.deleteByUserId(user.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		return 0;
-	}
-	
-	/**
-	 * Update isActive value of AccessToken.
-	 * 
-	 * @param user
-	 */
-	private void updateAccessToken(User user) {
-		List<AccessToken> accessTokens = accessTokenRepository.findAll()
-				.stream().filter(accessToken -> accessToken.getUserId() == user.getId())
-				.collect(Collectors.toList());
-		accessTokens.stream().forEach(item -> item.setIsActive(false));
-		accessTokenRepository.saveAll(accessTokens);
-	}
-	
-	/**
-	 * Update isActive value of RefreshToken.
-	 * 
-	 * @param user
-	 */
-	private void updateRefreshToken(User user) {
-		List<RefreshToken> refreshTokens = refreshTokenRepository.findAll()
-				.stream().filter(refreshToken -> refreshToken.getUserId() == user.getId())
-				.collect(Collectors.toList());
-		refreshTokens.stream().forEach(item -> item.setIsActive(false));
-		refreshTokenRepository.saveAll(refreshTokens);
 	}
 
 }
