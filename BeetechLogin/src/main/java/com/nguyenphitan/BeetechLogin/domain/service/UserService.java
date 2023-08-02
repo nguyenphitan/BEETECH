@@ -1,4 +1,4 @@
-package com.nguyenphitan.BeetechLogin.user;
+package com.nguyenphitan.BeetechLogin.domain.service;
 
 import javax.transaction.Transactional;
 
@@ -7,6 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.nguyenphitan.BeetechLogin.custom.CustomUserDetails;
+import com.nguyenphitan.BeetechLogin.domain.entity.User;
+import com.nguyenphitan.BeetechLogin.domain.repository.UserRepository;
 
 @Service
 public class UserService implements UserDetailsService {

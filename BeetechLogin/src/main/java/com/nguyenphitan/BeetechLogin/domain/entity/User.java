@@ -1,4 +1,4 @@
-package com.nguyenphitan.BeetechLogin.user;
+package com.nguyenphitan.BeetechLogin.domain.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
